@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="currentColor">
+    <defs id="defs1"><style type="text/css" id="current-color-scheme">.ColorScheme-Text {color:#FFFFFF;}</style></defs>
+    <path  class="ColorScheme-Text" style="fill:currentColor;fill-opacity:1" d="M12.28,16.27Q13,15.55 13,14.5V9h3V7H12v5.5q-0.32-0.23-0.7-0.36T10.5,12q-1.05,0-1.78,0.72T8,14.5t0.72,1.77T10.5,17t1.78-0.73ZM4,20q-0.82,0-1.41-0.59T2,18V6Q2,5.18 2.59,4.59T4,4H20q0.83,0 1.41,0.59Q22,5.18 22,6V18q0,0.82-0.59,1.41T20,20H4Zm0-2H20V6H4V18Zm0,0V6V18Z"/>
+</svg>

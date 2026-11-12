@@ -1,0 +1,13 @@
+__pycache__
+*.egg-info/
+tests/files/temp
+/attic
+/build
+/dev/build
+/dev/dist
+/dev/bin
+/dev/appimage/dist
+/dev/appimage/build
+/dist
+*.egg-info/
+scratchpad.md

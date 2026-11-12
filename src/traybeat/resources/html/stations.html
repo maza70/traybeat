@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" class="page-stations">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="common.css">
+<title>TrayBeat - Station configuration</title>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Station configuration</h1>
+    <p>Select a station in the tree to edit its properties.<br> </p>
+  </div>
+  <div>
+  <a href="/">Information page</a><br>
+  Look for now stations see: <a href="https://www.radio-browser.info/" target="_blank">radio-browser</a>
+  </div>
+</header>
+
+<div class="workspace">
+  <aside class="panel" aria-label="Station tree panel">
+    <div class="panel-heading">
+      <h2>Station tree</h2>
+      <div class="panel-actions">
+        <button id="add-root" type="button">Add root item</button>
+        <button id="add-item" type="button" disabled title="Add a child to a selected folder, or insert after another selected item">Add item</button>
+      </div>
+    </div>
+    <div id="tree-container">
+      <div id="station-tree" role="tree"></div>
+    </div>
+  </aside>
+
+  <main class="panel" aria-label="Station editor panel">
+    <div id="editor">
+      <h2>Edit station</h2>
+      <p class="hint">Select an item in the tree, or add a new root item.</p>
+    </div>
+  </main>
+</div>
+
+<footer class="savebar">
+  <p id="status" role="status" aria-live="polite">Loading configuration…</p>
+  <div class="save-actions">
+    <button id="reload" type="button">Discard changes</button>
+    <button id="save" class="primary" type="button">Save configuration</button>
+  </div>
+</footer>
+
+  <script src="common.js"></script>
+  <script src="stations.js"></script>
+</body>
+</html>

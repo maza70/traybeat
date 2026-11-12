@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de" class="page-monitor">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="common.css">
+  <title>TrayBeat WebSocket Broadcast Monitor</title>
+</head>
+
+<body>
+  <main>
+    <h1>WebSocket Broadcast Monitor</h1>
+    <p class="hint">Verbindet sich als normaler WebSocket-Client und zeigt alle Nachrichten an, die der Server an diese
+      Verbindung sendet.</p>
+
+    <div class="toolbar">
+      <input id="url" type="url" placeholder="ws://localhost:8080/ws" aria-label="WebSocket-URL"
+        value="ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}/ws">
+      <button id="connect" class="primary">Verbinden</button>
+      <button id="disconnect" class="secondary" disabled>Trennen</button>
+    </div>
+
+    <div class="statusbar">
+      <span>Status: <span id="status" class="status">Getrennt</span></span>
+      <span>Empfangen: <strong id="count">0</strong></span>
+      <span>Letzte Nachricht: <strong id="last">–</strong></span>
+    </div>
+
+    <div class="filters">
+      <input id="filter" type="search" placeholder="Nachrichten filtern …" aria-label="Nachrichten filtern">
+      <label><input id="autoscroll" type="checkbox" checked> Automatisch nach unten scrollen</label>
+      <button id="clear" class="danger">Anzeige leeren</button>
+    </div>
+
+    <section id="messages" aria-live="polite">
+      <div class="empty">Noch keine Nachrichten empfangen.</div>
+    </section>
+    <footer>Hinweis: Bei wss:// ist die Verbindung verschlüsselt. Diese Seite kann nur Nachrichten anzeigen, die der
+      Server an diese Browser-Verbindung liefert.</footer>
+  </main>
+  
+
+  <script src="common.js"></script>
+  <script src="websocket.js"></script>
+  <script src="monitor.js"></script>
+</body>
+
+</html>

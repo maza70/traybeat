@@ -1,0 +1,28 @@
+{
+    "stations": [
+        {
+            "type": "WEBRADIO",
+            "caption": "BigFm",
+            "url": "https://stream.bigfm.de/deutschland/mp3-128/stream.bigfm.de"
+        },
+        {
+            "type": "SEPARATOR"
+        },
+        {
+            "type": "WEBRADIO",
+            "caption": "Antenne 1",
+            "url": "http://stream.antenne1.de/a1stg/livestream2.mp3"
+        },
+        {
+            "type": "FOLDER",
+            "name": "Playlisten",
+            "items": [
+                {
+                    "type": "PLAYLIST",
+                    "caption": "Top Music",
+                    "path": "${HOME}/sync/music/playlist/06_Top.m3u"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+{
+    "traceLevel": "DEBUG",
+    "webServerHost":"localhost",
+    "webServerPort":123
+}

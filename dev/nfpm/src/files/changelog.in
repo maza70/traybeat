@@ -1,0 +1,5 @@
+traybeat (${VERSION}) unstable; urgency=medium
+
+  * Initial release.
+
+ -- Maintainer Matthias Zartmann <mail@ma-za.de>  ${FULLDATE}

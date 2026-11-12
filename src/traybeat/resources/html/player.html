@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" class="page-player">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10121b">
+  <link rel="stylesheet" href="common.css" >
+  <title>TrayBeat - Music Player</title>
+</head>
+
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <main class="player" aria-label="Music player">
+    <div class="blur-cover" id="blurCover"></div>
+    <section class="art-panel">
+      <img class="cover" id="cover" alt="Album cover" src="" />
+      <div>
+        <div class="eyebrow">
+          <div id="stationType">Waiting for player data</div><strong class="meta-value" id="caption">—</strong>
+        </div>
+        <hr>
+        <h1 class="track-title" id="title">Nothing playing</h1>
+        <p class="artist" id="artist">----</p>
+      </div>
+    </section>
+
+    <section class="details">
+      <div class="topline">
+        <span class="brand">NOW PLAYING</span>
+        <span class="connection"><span class="dot" id="connectionDot"></span><span
+            id="connectionText">Connecting…</span></span>
+      </div>
+
+      <div>
+        <h2 class="section-title">Track &amp; player information</h2>
+        <div class="metadata">
+          <div class="meta-card"><span class="meta-label">Type</span><strong class="meta-value" id="type">—</strong>
+          </div>
+          <div class="meta-card"><span class="meta-label">State</span><strong class="meta-value" id="state">—</strong>
+          </div>
+
+          <div class="meta-card"><span class="meta-label">Volume</span><strong class="meta-value" id="volume">—</strong>
+          </div>
+          <div class="meta-card"><span class="meta-label">Volume delta</span><strong class="meta-value"
+              id="volumeDelta">—</strong></div>
+          <div class="meta-card playlist_card"><span class="meta-label">Playlist index</span><strong class="meta-value"
+              id="playlistIndex">—</strong></div>
+          <div class="meta-card playlist_card"><span class="meta-label">Playlist length</span><strong class="meta-value"
+              id="playlistLength">—</strong></div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="section-title">Controls</h2>
+        <div class="controls">
+          <button data-control="prev" title="Previous track" aria-label="Previous track"><img
+              src="./svg/skip_previous.svg" alt="Previous track" width="24" height="24"></button>
+          <button data-control="stop" title="Stop" aria-label="Stop"><img src="./svg/stop.svg" alt="Stop" width="24"
+              height="24"></button>
+          <button data-control="pause" title="Pause" aria-label="Pause"><img src="./svg/pause.svg" alt="Pause"
+              width="24" height="24"></button>
+          <button data-control="play" title="Play" aria-label="Play"><img src="./svg/play.svg" alt="Play" width="24"
+              height="24"></button>
+          <button data-control="next" title="Next track" aria-label="Next track"><img src="./svg/skip_next.svg"
+              alt="Next track" width="24" height="24"></button>
+        </div>
+        <div class="controls space-top">
+          
+            <button data-control="volume_down" title="Volume down" aria-label="Volume down"><img
+                src="./svg/volume_down.svg" alt="Volume down" width="24" height="24"></button>
+            <button data-control="volume_up" title="Volume up" aria-label="Volume up"><img src="./svg/volume_up.svg"
+                alt="Volume up" width="24" height="24"></button>
+
+        </div>
+      </div>
+
+      <div class="volume-row">
+        <span>VOL</span>
+        <div class="volume-track">
+          <div class="volume-fill" id="volumeFill"></div>
+        </div><span id="volumePercent">—</span>
+      </div>
+      <p class="error" id="error" role="status"></p>
+    </section>
+  </main>
+  <script src="common.js"></script>
+  <script src="websocket.js"></script>
+  <script src="player.js"></script>
+</body>
+
+</html>

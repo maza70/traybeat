@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "TrayBeat",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "traybeat",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+        },
+        {
+            "name": "TrayBeat AutoPlay",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "traybeat",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--play",
+                "--tracelevel","DEBUG",
+                "--port","8080",
+                "--ws_port","41445",
+                "--icon_theme","dark"
+            ]
+        },
+         {
+            "name": "TrayBeat with log",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "traybeat",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "-l ~/traybeat.log",
+            ]
+        }
+     
+    ]
+}

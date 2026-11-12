@@ -1,0 +1,17 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: *
+Copyright: ${YEAR} Matthias Zartmann
+License: Apache-2.0
+
+Files: debian/*
+Copyright: ${YEAR} Matthias Zartmann
+License: Apache-2.0
+
+License: Apache-2.0
+This package is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the license at
+https://www.apache.org/licenses/LICENSE-2.0
+.
+On Debian systems, the complete license text can be found in
+/usr/share/common-licenses/Apache-2.0.

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Comment=TrayBeat - A lightweight music player for your system tray.
+Exec=/usr/local/bin/traybeat
+Icon=traybeat
+Name=TrayBeat
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Utility;AudioVideo;Audio;Player;

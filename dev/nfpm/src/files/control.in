@@ -1,0 +1,12 @@
+Package: traybeat
+Version: ${VERSION}
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Matthias Zartmann <mail@ma-za.de>
+Depends: libc6, python3-gi, python3-gst-1.0, gir1.2-gstreamer-1.0, gir1.2-glib-2.0, gstreamer1.0-plugins-base, gstreamer1.0-plugins-good, gstreamer1.0-plugins-ugly, gstreamer1.0-libav
+Description: TrayBeat a music player in the system tray
+ TrayBeat can play web radio and M3U and MP3 playlists 
+ and runs in the tray area. This programm is designed specifically
+ for KDE Plasma 6 and runs in the system tray as a small music player. 
+ It supports both, web radio stations and m3u MP3 playlists.

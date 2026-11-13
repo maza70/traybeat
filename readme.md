@@ -1,6 +1,6 @@
 **English** | [Deutsch](readme_de.md)
 
-<img src="docs/images/traybeat.png" width="96" alt="TrayBeat"><span style="font-size: 8px;">ai generated document</span>
+<img src="docs/images/traybeat.png" width="96" alt="TrayBeat"><sub><small>ai generated document</small></sub>
 
 # TrayBeat
 

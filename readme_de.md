@@ -41,12 +41,16 @@ sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugi
 ```
 ### Fedora
 ```
-sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good     gstreamer1-plugins-ugly-free gstreamer1-libav glib-networking
+sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly-free gstreamer1-libav glib-networking
 ```
+Sind die Abhängigkeiten installiert, können Sie die Datei `traybeat<Version>-x86_64.AppImage` an einen beliebigen Ort kopieren und mit `chmod +x traybeat<Version>-x86_64.AppImage` ausführbar machen. Danach kann TrayBeat normal gestartet werden.
 
-Sind die Abhängigkeiten installiert, können Sie die Datei `traybeat-x86_64.AppImage` an einen beliebigen Ort kopieren und mit `chmod +x traybeat-x86_64.AppImage` ausführbar machen. Danach kann TrayBeat normal gestartet werden.
+## Installation als flatpak
+Wenn sie TrayBeat als flatpak installieren wollen, genügt folgender Befehl `flatpak install --user de.maza.traybeat_<Version>.flatpak`.
+Flatpak hat den Vorteil das es keinerlei abhängigkeiten vom Hostsystem benötigt. 
 
-## Installation als deb oder rpmPpaket
+
+## Installation als deb oder rpm Paket
 Sie können TrayBeat auch ganz einfach über ein deb oder rpm Paket auf Ihrem System installieren und dabei automatisch alle nötigen zusätzlich benötigten Pakete einrichten lassen. Laden Sie das Release von GitHub herunter und speichern Sie es in einem beliebigen Verzeichnis.
 
 ### Debian
@@ -61,21 +65,19 @@ sudo apt install ./traybeat_<version>_amd64.deb
 sudo dnf install install ./traybeat_<version>_amd64.deb
 ```
 
-## Deinstallation
-
-### Debian
+## Deinstallation der Konfiguration, cache und status
+## wenn es als deb,rpm oder appimage installiert wurde 
 ```
-sudo apt remove traybeat
 rm -rf ~/.config/de.maza.traybeat
+rm -rf ~/.cache/de.maza.traybeat
 rm -rf ~/.local/state/de.maza.traybeat
 ```
+## wenn es als flatpak installiert wurde 
+```
+rm -rf ~/.var/app/de.maza.traybeat
+```
 
-### Fedora
-```
-sudo dnf remove traybeat
-rm -rf ~/.config/de.maza.traybeat
-rm -rf ~/.local/state/de.maza.traybeat
-```
+
 
 ## Unterstützte Desktops
 TrayBeat wurde unter folgenden Umgebungen getestet:

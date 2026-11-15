@@ -1,3 +1,4 @@
+import os
 import shutil
 from pathlib import Path
 
@@ -39,3 +40,13 @@ class TB_Util:
                 item.unlink()
             elif item.is_dir():
                 shutil.rmtree(item)
+
+    @staticmethod
+    def get_package_format() -> str:
+        if os.environ.get("FLATPAK_ID"):
+            return "flatpak"
+
+        if os.environ.get("APPIMAGE"):
+            return "appimage"
+
+        return "system"

@@ -27,7 +27,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
       rsync -av $SOURCE_DIR/usr ./build/
       mkdir -p ./build/usr/local/bin
-      cp -v  ./dist/traybeat-x86_64.AppImage   ./build/usr/local/bin/traybeat
+      cp -v  ./dist/*.AppImage   ./build/usr/local/bin/traybeat
      
       echo "----===== Build deb package =====----"
     

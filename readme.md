@@ -50,7 +50,15 @@ sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugi
 sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good     gstreamer1-plugins-ugly-free gstreamer1-libav glib-networking
 ```
 
-Once the dependencies are installed, you can copy the `traybeat-x86_64.AppImage` file to any location and make it executable with `chmod +x traybeat-x86_64.AppImage`. TrayBeat can then be started normally.
+Once the dependencies are installed, you can copy the `traybeat<Version>-x86_64.AppImage` file to any location and make it executable with `chmod +x traybeat<Version>-x86_64.AppImage`. TrayBeat can then be started normally.
+
+
+
+Installation as a Flatpak
+
+If you want to install TrayBeat as a Flatpak, the following command is sufficient: flatpak install --user de.maza.traybeat_<Version>.flatpak.
+
+Flatpak has the advantage that it requires no dependencies from the host system.
 
 ## Installing as a DEB or RPM package
 
@@ -60,31 +68,26 @@ You can also easily install TrayBeat on your system using a DEB or RPM package. 
 
 ```bash
 sudo apt update
-sudo apt install ./traybeat_<version>_amd64.deb
+sudo apt install ./traybeat_<Version>_amd64.deb
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install install ./traybeat_<version>_amd64.deb
+sudo dnf install install ./traybeat_<Version>_amd64.deb
 ```
 
-## Uninstallation
+## Uninstalling the configuration,cache and state
 
-### Debian
-
+### If it was installed as a deb, rpm, or AppImage
 ```bash
-sudo apt remove traybeat
 rm -rf ~/.config/de.maza.traybeat
+rm -rf ~/.cache/de.maza.traybeat
 rm -rf ~/.local/state/de.maza.traybeat
 ```
-
-### Fedora
-
+### If it was installed as a Flatpak
 ```bash
-sudo dnf remove traybeat
-rm -rf ~/.config/de.maza.traybeat
-rm -rf ~/.local/state/de.maza.traybeat
+rm -rf ~/.var/app/de.maza.traybeat
 ```
 
 ## Supported desktops

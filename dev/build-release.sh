@@ -5,17 +5,13 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
 (
     cd ${ROOT_DIR}
-   
-
+    ./dev/clean.sh
+    ./dev/make-venv.sh
     source .venv/bin/activate
     ./dev/pycheck.sh
-    # update lock and hashes  
-    python -m appimage.ctl update-tools
-    python -m appimage.ctl enable-reproducible
-
-    ./dev/build-appimage.sh
+    ./dev/build-appimage.sh --lock
     ./dev/build-sys-package.sh
-    ./dev/build-flatpak.sh all
+    ./dev/build-flatpak.sh
 )
 
 

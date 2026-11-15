@@ -23,9 +23,10 @@ done
     #org.gnome.Sdk//51
 
     cd ${ROOT_DIR}
+    export VERSION=$(sed -n 's/^version *= *"\(.*\)"/\1/p' ${ROOT_DIR}/pyproject.toml | head -n1)
     echo "SKIP_PIP_GENERATOR= $SKIP_PIP_GENERATOR"
     echo "INSTALL_RUN       = $INSTALL_RUN"
-     if [[ "$SKIP_PIP_GENERATOR" == false ]]; then
+    if [[ "$SKIP_PIP_GENERATOR" == false ]]; then
 
         PIP_GENERATOR="./dev/flatpak/flatpak-pip-generator.py"
         if [[ ! -f "$PIP_GENERATOR" ]]; then
@@ -50,13 +51,13 @@ done
         --user \
         --state-dir=./dev/flatpak/.flatpak-builder \
         --install-deps-from=flathub \
-        --repo=dev/dist/repo \
-        dev/build \
-        dev/flatpak/de.maza.traybeat.yml
+        --repo=./dev/build/repo \
+        ./dev/build \
+        ./dev/flatpak/de.maza.traybeat.yml
     echo "---===== run build-bundle  =====---- "
     flatpak build-bundle \
-        dev/dist/repo \
-        dev/dist/traybeat.flatpak \
+        ./dev/build/repo \
+        dev/dist/de.maza.traybeat_$VERSION.flatpak \
         de.maza.traybeat
     echo "---===== builded flatpak  =====---- "
     ls -al ./dev/dist/*.flatpak

@@ -15,23 +15,23 @@ if sys.version_info < (3, 10):
     sys.stderr.write("Error: This script requires Python 3.10 or higher.\n")
     sys.exit(1)
 
-import textwrap
-import platform
 import argparse
 import json
+import operator
 import os
+import platform
 import re
 import subprocess
 import tempfile
+import textwrap
 import urllib.request
 from collections import OrderedDict
 from collections.abc import Iterator
 from contextlib import suppress
-from typing import Any, TextIO, Callable, NoReturn
-import operator
-from packaging.version import Version
+from typing import Any, Callable, NoReturn, TextIO, cast
+
 from packaging.tags import Tag
-from typing import cast
+from packaging.version import Version
 
 try:
     import requirements

@@ -46,6 +46,17 @@ url = "https://files.pythonhosted.org/packages/ef/fe/f5cdaa2d1c4086e757430f368c2
 sha256 = "5f56499c1a74d2b862beb0c33b8016f99d095858455df9d21583bbbc1c15b582"
 
 [[packages]]
+name = "platformdirs"
+version = "4.14.5"
+
+[[packages.wheels]]
+name = "platformdirs-4.14.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/7c/ae/ecbbbfd0e4343a6a521d49b3c8656fb4643dee2a4f6eaf941cf3280391a8/platformdirs-4.14.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "8e778c6fa421516f4d3369449f8df3b0e1b72c0e0005fe88e3ec772d0a14e750"
+
+[[packages]]
 name = "pycairo"
 version = "1.29.2"
 

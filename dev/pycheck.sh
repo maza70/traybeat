@@ -4,8 +4,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
 (
     cd ${ROOT_DIR}
-    ruff check . --select I --fix
-    pyright .
+    ruff check ./src --select I --fix
+    pyright ./src
 
 )
 

@@ -86,6 +86,7 @@ class Core(TB_I_Core):
             self._logger.info(f"can't register {APP_NAME}, did you start twice")
             raise SystemExit(1)
 
+        self._logger.info(f"Runing environment is: {TB_Util.get_package_format()}")
         self._logger.info(f"Temp directory is: {TEMP_PATH}")
         self._logger.info(f"App-Version is: {APP_VERSION}")
         self._logger.debug("initialize configuration")
@@ -176,11 +177,6 @@ class Core(TB_I_Core):
                 self._gplayer.play()
 
     def _gplayer_play(self, station: TB_StationEntry):
-
-        if self._currentStation is not None:
-            state = TB_State()
-            state.update_station_state(self._currentStation, self._gplayer.get_status())
-            state.save()
 
         self._gplayer.volume_delta = station.volumeDelta / 100
         self._currentStation = station

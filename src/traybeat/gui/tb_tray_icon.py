@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import itertools
-import os
 from collections.abc import Callable
 from enum import Enum
 
@@ -55,7 +54,7 @@ class TB_TrayIcon:
         self.on_scroll: Callable[[int, str], None] | None = None
         self.on_xdg_activation_token: Callable[[str], None] | None = None
 
-        self._service_name = f"org.kde.StatusNotifierItem-{os.getpid()}-{next(TB_TrayIcon._counter)}"
+        self._service_name = "org.kde.StatusNotifierItem.traybeat"
         self._item = TB_StatusNotifierItem(app_id, title, category.value)
         self._item.on_activate = self._handle_activate
         self._item.on_secondary_activate = self._handle_secondary_activate

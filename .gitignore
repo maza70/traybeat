@@ -8,6 +8,7 @@ tests/files/temp
 /dev/bin
 /dev/appimage/dist
 /dev/appimage/build
+/dev/flatpak/.flatpak-builder
 /dist
 *.egg-info/
 scratchpad.md

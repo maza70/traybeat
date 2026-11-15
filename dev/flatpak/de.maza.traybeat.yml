@@ -1,0 +1,54 @@
+app-id: de.maza.traybeat
+
+
+# runtime: org.freedesktop.Platform
+# runtime-version: '26.08'
+# sdk: org.freedesktop.Sdk
+
+runtime: org.gnome.Platform
+runtime-version: '51'
+sdk: org.gnome.Sdk
+
+command: traybeat
+
+# Optional GStreamer plugin extension.
+add-extensions:
+  org.freedesktop.Platform.GStreamer:
+    version: '26.08'
+    directory: lib/gstreamer-1.0
+    add-ld-path: lib
+finish-args:
+  # Network access for the localhost web server.
+  - --share=network
+
+  # D-Bus access for the StatusNotifier tray icon.
+  - --talk-name=org.kde.StatusNotifierWatcher
+  # System D-Bus: systemd-logind
+  - --system-talk-name=org.freedesktop.login1
+  - --own-name=org.kde.StatusNotifierItem.traybeat
+#  - --socket=session-bus
+  # Read-only access to the user's home directory.
+  - --filesystem=home:ro
+
+  # Desktop integration.
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+
+  # Audio output, if required by GStreamer.
+  - --socket=pulseaudio
+
+modules:
+  # Python dependencies generated from pyproject.toml.
+  - python-dependencies.json
+
+  # Traybeat application.
+  - name: traybeat
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --no-build-isolation --prefix=/app .
+      - install -Dm644 ./dev/share/de.maza.traybeat.desktop /app/share/applications/de.maza.traybeat.desktop
+      - install -Dm644 ./dev/share/de.maza.traybeat.svg /app/share/icons/hicolor/scalable/apps/de.maza.traybeat.svg
+    sources:
+      - type: dir
+        path: ../..

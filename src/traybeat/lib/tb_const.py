@@ -1,14 +1,8 @@
-import os
-import tempfile
 import tomllib
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-
-def user_temp_dir() -> Path:
-    path = Path(tempfile.gettempdir(), f"{APP_ID}.{os.getuid()}")
-    path.mkdir(parents=True, exist_ok=True)
-    return path
+from platformdirs import user_cache_path, user_config_path, user_state_path
 
 
 def _read_version() -> str:
@@ -32,9 +26,13 @@ APP_VERSION = _read_version()
 ICON_NAME = "TrayBeat"
 APP_ICON = "traybeat"
 DESKTOP_ENTRY_NAME = "tray-beat"
-CONFIG_PATH = Path(Path.home(), f".config/{APP_ID}")
-TEMP_PATH = user_temp_dir()
-STATE_PATH = Path(Path.home(), f".local/state/{APP_ID}")
+CONFIG_PATH = user_config_path(APP_ID)
+TEMP_PATH = user_cache_path(APP_ID)
+STATE_PATH = user_state_path(APP_ID)
+
+Path.mkdir(CONFIG_PATH, exist_ok=True)
+Path.mkdir(TEMP_PATH, exist_ok=True)
+Path.mkdir(STATE_PATH, exist_ok=True)
 
 
 """The traybeat directory"""

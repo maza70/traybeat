@@ -1,5 +1,5 @@
 traybeat (${VERSION}) unstable; urgency=medium
 
-  * Initial release.
+  * add flatpak and change code to compatible.
 
  -- Maintainer Matthias Zartmann <mail@ma-za.de>  ${FULLDATE}

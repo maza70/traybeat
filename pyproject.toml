@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "traybeat"
-version = "0.1.0"
+version = "0.1.1"
 description = "Webradio and playlist player that runs in the tray"
 requires-python = ">=3.13"
 dependencies = [
@@ -17,7 +17,9 @@ dependencies = [
     "Pillow>=11.1.0",
     "websockets>=17.4",
     "pycairo >= 1.29.2",
-    "pygments>=2.21.0" 
+    "pygments>=2.21.0",
+    "platformdirs"
+
 
 ]
 
@@ -66,7 +68,7 @@ appimagetool_sha256 = "ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3c
 runtime_sha256 = "2fca8b443c92510f1483a883f60061ad09b46b978b2631c807cd873a47ec260d"
 runtime_version = "20251108"
 appimagectl_version = "4.1.0"
-icon="./dev/appimage/assets/traybeat.svg"
-desktop = "./dev/appimage/assets/traybeat.desktop"
+icon="./dev/share/de.maza.traybeat.svg"
+desktop = "./dev/share/de.maza.traybeat.desktop"
 build_dir = "./dev/build"
 dist_dir = "./dev/dist"

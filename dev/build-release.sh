@@ -15,5 +15,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
     ./dev/build-appimage.sh
     ./dev/build-sys-package.sh
+    ./dev/build-flatpak.sh all
 )
+
 

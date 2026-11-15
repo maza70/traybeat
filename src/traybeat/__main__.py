@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import fcntl
 import logging
 import os
@@ -25,7 +26,7 @@ def acquire_single_instance_lock():
     return fh
 
 
-def main() -> None:
+async def run() -> None:
 
     parser = argparse.ArgumentParser()
     parser.description = f"TrayBeat {APP_VERSION}:\nA small system tray controled webradio and m3u playlist player."
@@ -108,8 +109,7 @@ def main() -> None:
         print("TrayBeat runs only under KDE desktop environment!")
 
     tray_beat_player = Core(startupConfig)
-    tray_beat_player.start()
-    sys.exit(0)
+    await tray_beat_player.start()
 
 
 # Nicht abgefangene Exceptions zentral protokollieren
@@ -126,6 +126,10 @@ def handle_exception(
         "Uncaught exception",
         exc_info=(exc_type, exc_value, exc_traceback),
     )
+
+
+def main() -> None:
+    asyncio.run(run())
 
 
 if __name__ == "__main__":

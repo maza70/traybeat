@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-import itertools
+import logging
 from collections.abc import Callable
 from enum import Enum
 
@@ -39,7 +39,7 @@ class TB_TrayStatus(str, Enum):
 class TB_TrayIcon:
     """System tray icon with context menu; setters may be called from any thread."""
 
-    _counter = itertools.count(1)
+    _logger = logging.getLogger(__name__)
 
     def __init__(
         self,
@@ -82,10 +82,17 @@ class TB_TrayIcon:
         if self._bus is not None:
             return
         self._loop = asyncio.get_running_loop()
+        self._item.set_icon(
+            "audio-x-generic",
+            [],
+        )
         bus = await MessageBus(bus_type=BusType.SESSION).connect()
         bus.export(SNI_PATH, self._item)
         self._menu.export(bus)
-        await bus.request_name(self._service_name)
+        result = await bus.request_name(self._service_name)
+
+        self._logger.info("D-Bus request name result: %s", result)
+
         self._watcher = TB_StatusNotifierWatcherClient(bus, self._service_name)
         await self._watcher.start_monitoring()
         await self._watcher.register()
@@ -169,10 +176,10 @@ class TB_TrayIcon:
     def _post(self, func: Callable[[], None]) -> None:
         """Run ``func`` in the asyncio thread; calls keep their order (FIFO)."""
         loop = self._loop
-        if loop is None:
-            func()
-        else:
-            loop.call_soon_threadsafe(func)
+
+        if loop is None or loop.is_closed():
+            raise RuntimeError("Tray icon event loop is not available")
+        loop.call_soon_threadsafe(func)
 
     def _handle_activate(self, x: int, y: int) -> None:
         """Forward a primary activation to ``on_activate``."""

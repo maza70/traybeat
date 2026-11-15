@@ -72,7 +72,7 @@ class TB_WebSocket:
         port: int = 0,
     ):
         self._core = core
-        self._dispatcher = disp
+        self._disp = disp
         self._on_action = on_action
         self._host = host
         self._port = port
@@ -118,21 +118,21 @@ class TB_WebSocket:
     def host(self) -> str:
         return self._host
 
-    def publish(self, data: PlayerChangedData):
-        self._dispatcher.sub(self._on_player_changed(data, True))
+    async def publish(self, data: PlayerChangedData):
+        await self._on_player_changed(data, True)
 
     async def start(self):
         self._server = await serve(self._handler, self._host, self._port)
         self._port = self._server.sockets[0].getsockname()[1]
         self._logger.info("WebSocket server listening on %s:%s", self._host, self._port)
-        self._core.player_changed_subscribe(lambda data: self._dispatcher.sub(self._on_player_changed(data)))
+        self._core.player_changed_subscribe(self._disp.async_callback(lambda data: self._on_player_changed(data)))
 
     async def stop(self):
         if self._server:
             self._server.close()
             await self._server.wait_closed()
             self._server = None
-        self._core.player_changed_unsubscribe(lambda data: self._dispatcher.sub(self._on_player_changed(data)))
+        self._core.player_changed_unsubscribe(self._disp.async_callback(lambda data: self._on_player_changed(data)))
 
     async def _handler(self, websocket: ServerConnection):
         self._clients.add(websocket)

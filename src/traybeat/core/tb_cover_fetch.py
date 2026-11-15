@@ -106,6 +106,10 @@ class TB_CoverFetch:
             if future in self._active:
                 self._active.remove(future)
 
-    def close(self) -> None:
-        """Shut down the thread pool without waiting for running jobs."""
-        self._executor.shutdown(wait=False, cancel_futures=True)
+    async def close(self) -> None:
+        """Wait for running jobs and shut down the thread pool."""
+        await asyncio.to_thread(
+            self._executor.shutdown,
+            wait=True,
+            cancel_futures=True,
+        )

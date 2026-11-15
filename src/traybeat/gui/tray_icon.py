@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import subprocess
 from copy import deepcopy
@@ -31,28 +30,16 @@ class TrayIcon:
         disp: TB_Dispatch,
     ) -> None:
 
-        self._loop: asyncio.AbstractEventLoop | None = None
         self._metaEntry: TB_MenuItem | None
         self._station_editor_url: str = ""
         self._about_url: str = ""
         self._player_controls_url: str = ""
         self._lastPlayerState: TB_CorePlayerInfo | None = None
         self._lastMeta: TB_CorePlayerMeta | None = None
-
         self._icons = icons
         self._core = core
         self._disp = disp
-
         self._tray_icon = TB_TrayIcon(APP_ID, APP_NAME)
-        self._tray_icon.on_activate = lambda x, y: self._onActivate(x, y)
-        self._tray_icon.on_secondary_activate = lambda x, y: self._onSecondaryActivate(x, y)
-        self._tray_icon.on_scroll = lambda delta, orientation: self._on_scroll(delta, orientation)
-        self._tray_icon.set_icon(icons.GetIcon(TB_IconsName.TRAY_STOP))
-        self._tray_icon.set_tooltip(title="TrayBeat", description="")
-
-        svg_icons = TB_Resource.get_folder("svg")
-
-        self._tray_icon.set_icon_theme_path(str(svg_icons))
 
     def _onActivate(self, x: int, y: int):
         self._core.player_next()
@@ -262,11 +249,17 @@ class TrayIcon:
         self._make_menu(stations, self._tray_icon.menu)
 
     async def start(self, stations: TB_StationsConfig):
-        self._loop = asyncio.get_running_loop()
-        self._core.player_changed_subscribe(lambda data: self._on_player_changed(data))
-        self.updateStations(stations)
         await self._tray_icon.start()
+        self._tray_icon.on_activate = lambda x, y: self._onActivate(x, y)
+        self._tray_icon.on_secondary_activate = lambda x, y: self._onSecondaryActivate(x, y)
+        self._tray_icon.on_scroll = lambda delta, orientation: self._on_scroll(delta, orientation)
+        self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_STOP))
+        self._tray_icon.set_tooltip(title="TrayBeat", description="")
+        svg_icons = TB_Resource.get_folder("svg")
+        self._tray_icon.set_icon_theme_path(str(svg_icons))
+        self._core.player_changed_subscribe(self._disp.async_callback(lambda data: self._on_player_changed(data)))
+        self.updateStations(stations)
 
     async def stop(self):
-        self._core.player_changed_unsubscribe(lambda data: self._on_player_changed(data))
+        self._core.player_changed_unsubscribe(self._disp.async_callback(lambda data: self._on_player_changed(data)))
         await self._tray_icon.stop()

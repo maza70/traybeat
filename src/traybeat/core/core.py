@@ -1,3 +1,5 @@
+import asyncio
+
 import gi
 
 gi.require_version("Gst", "1.0")
@@ -60,7 +62,7 @@ class Core(TB_I_Core):
         logging.getLogger("PIL").setLevel(logging.WARNING)
         self._player_change_listeners: list[OnCorePlayerChanged] = []
         self._currentStation: TB_StationEntry | None = None
-
+        self._shutdown_event = asyncio.Event()
         self._dispatcher = TB_Dispatch()
         self._startupConfig = startupConfig
         if self._startupConfig.logFile:
@@ -114,7 +116,7 @@ class Core(TB_I_Core):
         self._websocket = TB_WebSocket(
             self,
             self._dispatcher,
-            on_action=lambda socket, action: self._on_websocket_action(socket, action),
+            on_action=self._dispatcher.async_callback(lambda socket, action: self._on_websocket_action(socket, action)),
             host=startupConfig.websocket_bind,
             port=startupConfig.websocket_port,
         )
@@ -220,7 +222,8 @@ class Core(TB_I_Core):
         self._standby_monitor.stop()
         self._httpServer.stop()
         self._gplayer.close()
-        self._mainloop.quit()
+        self._shutdown_event.set()
+        # self._mainloop.quit()
 
     def player_play(self) -> None:
         """Start playback."""
@@ -369,9 +372,9 @@ class Core(TB_I_Core):
     def _open_about(self):
         subprocess.Popen(["xdg-open", self._httpServer.about_url])
 
-    def _on_websocket_action(self, socket: TB_WebSocket, action: TB_WsAction):
+    async def _on_websocket_action(self, socket: TB_WebSocket, action: TB_WsAction):
         if action == TB_WsAction.CLIENT_CONNECT:
-            socket.publish(PlayerChangedData(meta=self.player_meta(), player_info=self.player_info()))
+            await socket.publish(PlayerChangedData(meta=self.player_meta(), player_info=self.player_info()))
 
     def _on_http_action(
         self,
@@ -451,31 +454,38 @@ class Core(TB_I_Core):
             state.update_station_state(self._currentStation, self._gplayer.get_status())
             state.save()
 
-    def start(self) -> None:
+    async def _run_glib_loop(self) -> None:
+        context = GLib.MainContext.default()
+
+        while not self._shutdown_event.is_set():
+            while context.pending():
+                context.iteration(False)
+
+            await asyncio.sleep(0.01)
+
+    async def start(self) -> None:
         """Start TrayBeat synchron"""
         self._logger.info(f"Start {APP_NAME}")
-        self._mainloop = GLib.MainLoop()
+        # self._mainloop = GLib.MainLoop()
 
         try:
-            self._dispatcher.start()
-            self._dispatcher.fnc(self._mpris.start()).result()
-            self._dispatcher.fnc(self._websocket.start()).result()
-            self._dispatcher.fnc(self._tray_icon.start(self._config.StationsConfig)).result()
-            self._dispatcher.fnc(self._shutdown_watchdog.start()).result()
-            self._dispatcher.fnc(self._dbusPlayerService.register()).result()
-            self._shutdown_watchdog.attach_glib_signals(self._mainloop.quit)
+            await self._mpris.start()
+            await self._websocket.start()
+            await self._tray_icon.start(self._config.StationsConfig)
+            await self._shutdown_watchdog.start()
+            await self._dbusPlayerService.register()
+            #  self._shutdown_watchdog.attach_glib_signals(self._shutdown_event.set)
             GLib.idle_add(self._on_initialized)
-            # blocking,.  till  quit()
-            self._mainloop.run()
+
+            await self._run_glib_loop()
 
         finally:
             # Tray stop clean
             self._dbusPlayerService.unregister()
-            self._dispatcher.fnc(self._websocket.stop()).result()
-            self._dispatcher.fnc(self._tray_icon.stop()).result()
-            self._dispatcher.fnc(self._mpris.stop()).result()
-
-            self._dispatcher.stop()
+            await self._websocket.stop()
+            await self._tray_icon.stop()
+            await self._mpris.stop()
+            await self._meta_collector.close()
             TB_Util.del_directory_content(TEMP_PATH)
 
 

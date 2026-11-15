@@ -41,8 +41,6 @@ from typing import Any
 from dbus_next.aio.message_bus import MessageBus
 from dbus_next.constants import BusType
 
-log = logging.getLogger(__name__)
-
 LOGIND_NAME = "org.freedesktop.login1"
 LOGIND_PATH = "/org/freedesktop/login1"
 LOGIND_MANAGER = "org.freedesktop.login1.Manager"
@@ -69,9 +67,7 @@ def _is_default_handler(handler: Any) -> bool:
     """Return whether a signal handler is a default, not an application one."""
     if handler in _DEFAULT_HANDLERS:
         return True
-    # asyncio.run() (Python 3.11+) installs its own SIGINT handler, a partial
-    # of Runner._on_sigint. It only cancels the main task, so it counts as
-    # a default handler too.
+
     owner = getattr(getattr(handler, "func", None), "__self__", None)
     return type(owner).__name__ == "Runner"
 
@@ -109,14 +105,16 @@ class TB_ShutdownWatchdog:
             quits on its own after the callback.
     """
 
+    _logger = logging.getLogger(__name__)
+
     def __init__(
         self,
         on_shutdown: ShutdownCallback,
         *,
-        who: str = "ktraytune",
+        who: str = "de.maza.traybeat",
         why: str = "Saving data before shutdown",
         handle_signals: bool = True,
-        exit_on_signal: bool = True,
+        exit_on_signal: bool = False,
     ) -> None:
         self._on_shutdown = on_shutdown
         self._who = who
@@ -217,7 +215,7 @@ class TB_ShutdownWatchdog:
             if inspect.isawaitable(result):
                 await result
         except Exception:
-            log.exception("Shutdown callback failed (reason: %s)", reason)
+            self._logger.exception("Shutdown callback failed (reason: %s)", reason)
         finally:
             self._release_lock()
 
@@ -232,7 +230,7 @@ class TB_ShutdownWatchdog:
             manager: Any = proxy.get_interface(LOGIND_MANAGER)
             manager.on_prepare_for_shutdown(self._on_prepare_for_shutdown)
         except Exception:
-            log.warning("systemd-logind is not available", exc_info=True)
+            self._logger.warning("systemd-logind is not available", exc_info=True)
             if bus is not None:
                 bus.disconnect()
             return
@@ -255,7 +253,7 @@ class TB_ShutdownWatchdog:
         try:
             self._lock_fd = await self._manager.call_inhibit("shutdown", self._who, self._why, "delay")
         except Exception:
-            log.warning("Could not take the shutdown inhibitor lock", exc_info=True)
+            self._logger.warning("Could not take the shutdown inhibitor lock", exc_info=True)
 
     def _release_lock(self) -> None:
         if self._lock_fd is None:
@@ -276,42 +274,46 @@ class TB_ShutdownWatchdog:
             try:
                 future.result(timeout=timeout)
             except Exception:
-                log.exception("Shutdown callback failed (signal %s)", name)
+                self._logger.exception("Shutdown callback failed (signal %s)", name)
         if on_done is not None:
             on_done()
         return False  # remove this source; a repeated signal gets its default
 
     def _install_signal_handlers(self) -> None:
         if threading.current_thread() is not threading.main_thread():
-            # The asyncio loop is in a worker thread, while GLib's main loop
-            # runs in the main thread. Queue signal registration onto GLib's
-            # default main context; it will run once that main loop starts.
-            try:
-                from gi.repository import GLib  # type: ignore
-
-                GLib.idle_add(self._attach_glib_signals_from_main_thread)
-                log.debug("Scheduled GLib signal registration on the main thread")
-            except Exception:
-                log.exception("Could not schedule GLib signal registration")
+            self._logger.error("Watchdog is NOT running in the main thread")
             return
 
         loop = asyncio.get_running_loop()
+
         for sig in _SHUTDOWN_SIGNALS:
-            if not _is_default_handler(signal.getsignal(sig)):
-                continue  # the application handles this signal itself
+            current = signal.getsignal(sig)
+
+            self._logger.debug(
+                "Signal %s: current handler=%r, default=%s",
+                sig.name,
+                current,
+                _is_default_handler(current),
+            )
+
+            if not _is_default_handler(current):
+                self._logger.warning("Signal %s is already handled by another component", sig.name)
+                continue
+
             try:
                 loop.add_signal_handler(sig, self._on_signal, sig)
+                self._signals.append(sig)
+                self._logger.debug("Successfully registered signal %s", sig.name)
+
             except (NotImplementedError, RuntimeError, ValueError):
-                log.warning("Cannot handle %s outside the main thread", sig.name)
-                continue
-            self._signals.append(sig)
+                self._logger.exception("Cannot register signal %s", sig.name)
 
     def _attach_glib_signals_from_main_thread(self) -> bool:
         """GLib idle callback: attach signal handlers from the main thread."""
         try:
             self.attach_glib_signals()
         except Exception:
-            log.exception("Could not attach GLib signal handlers")
+            self._logger.exception("Could not attach GLib signal handlers")
         return False  # run this idle callback only once
 
     def _remove_signal_handlers(self) -> None:

@@ -270,3 +270,6 @@ class TB_MetaCollector:
         else:
             if self._update_tags(self._current_meta, tags):
                 self._notify_metaChange()
+
+    async def close(self):
+        await self._cover_fetch.close()

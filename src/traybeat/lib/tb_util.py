@@ -1,5 +1,8 @@
 import os
 import shutil
+import sys
+import threading
+import traceback
 from pathlib import Path
 
 from gi.repository import Gio, GLib  # type: ignore
@@ -50,3 +53,29 @@ class TB_Util:
             return "appimage"
 
         return "system"
+
+    @staticmethod
+    def dump_threads() -> None:
+        print("\n" + "=" * 70)
+        print("ACTIVE THREADS")
+        print("=" * 70)
+
+        frames = sys._current_frames()  # type: ignore
+
+        for thread in threading.enumerate():
+            print(f"\nThread:    {thread.name}")
+            print(f"Class:     {type(thread).__name__}")
+            print(f"Module:    {type(thread).__module__}")
+            print(f"Ident:     {thread.ident}")
+            print(f"Native ID: {thread.native_id}")
+            print(f"Daemon:    {thread.daemon}")
+            print(f"Alive:     {thread.is_alive()}")
+
+            ident = thread.ident
+            frame = frames.get(ident) if ident is not None else None
+
+            if frame is not None:
+                print("Stack:")
+                traceback.print_stack(frame)
+            else:
+                print("No Python stack available.")

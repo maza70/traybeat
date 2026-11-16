@@ -8,9 +8,9 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
     rm -rf ${ROOT_DIR}/build \
            ${ROOT_DIR}/dev/build/ \
            ${ROOT_DIR}/dev/dist/  \
-           ${ROOT_DIR}/dev/.venv }
-           ${ROOT_DIR}/dev/flatpak/.flatpak-builder \
-           ${ROOT_DIR}/.venv 
+           ${ROOT_DIR}/dev/.venv/ \
+           ${ROOT_DIR}/dev/flatpak/.flatpak-builder/ \
+           ${ROOT_DIR}/.venv/ 
            
 
 

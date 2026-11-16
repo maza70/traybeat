@@ -19,6 +19,11 @@ Directory for assets to build the AppImage.
     -  Create the image resources for dark and light theme. 
 - **build-appimage.sh**
     - This script create a AppImage from the source.
+- **build-flatpak.sh**
+    - This script create a flatpak from the source.  
+    parameters: -sp = skip python pip-generator
+    -ir = Install an run flatpak
+
 - **build-sys-package.sh**
     -  Create a deb and rpm package from the previous generated AppImage.    
 - **build-release.sh**

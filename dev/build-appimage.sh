@@ -21,7 +21,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
     done
 
     rm -f ./dev/dist/*.AppImage
-
+    
     PYTHON="./.venv/bin/python"
     mkdir -p  ./dev/dist
     mkdir -p  ./dev/build

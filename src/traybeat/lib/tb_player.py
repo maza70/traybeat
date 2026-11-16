@@ -26,6 +26,9 @@ from traybeat.lib.tb_const import APP_ICON, APP_ID, APP_NAME
 gi.require_version("Gst", "1.0")
 from gi.repository import GLib, Gst  # type: ignore
 
+gi.require_version("GstAudio", "1.0")
+from gi.repository import GstAudio  # type: ignore
+
 MetadataCallback = Callable[[Any], None]
 CoverCallback = Callable[[bytes], None]
 
@@ -156,7 +159,10 @@ class TB_Player:
         player = Gst.ElementFactory.make("playbin", "audio-player")
         if player is None:
             raise RuntimeError("playbin element 'audio-player' is unavailable.")
+
         self._player = player
+        GST_PLAY_FLAG_AUDIO = 0x02
+        self._player.set_property("flags", GST_PLAY_FLAG_AUDIO)
         self._player.connect("source-setup", self._on_source_setup)
 
         self._player.set_property("audio-sink", sink)
@@ -212,8 +218,7 @@ class TB_Player:
         old_value = self._volume
         if value == old_value:
             return
-        self._volume = value
-        self._apply_volume()
+        self._volume = self._apply_volume()
 
     @property
     def volume_delta(self) -> float:
@@ -263,19 +268,27 @@ class TB_Player:
 
     def _on_source_setup(self, playbin: Gst.Element, source: Gst.Element):
         self._logger.debug("GStreamer source: %s", source.get_name())
-
+        if source.find_property("user-agent"):  # type: ignore
+            source.set_property("user-agent", f"{APP_NAME}/1.0")
         if source.find_property("timeout"):  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
             source.set_property("timeout", 5)
             self._logger.debug("Source timeout set to 5 seconds")
 
-    def _apply_volume(self) -> None:
+    def _apply_volume(self) -> float:
         """Apply the current volume and mute settings to GStreamer."""
         adjustedVolume = self._volume + self._volume_delta
         adjustedVolume = min(adjustedVolume, 1)
         adjustedVolume = max(adjustedVolume, 0)
 
-        self._player.set_property("volume", adjustedVolume)
+        # Kubische Skala wie im KDE-Mixer
+        GstAudio.StreamVolume.set_volume(
+            self._player,  # type: ignore
+            GstAudio.StreamVolumeFormat.CUBIC,
+            adjustedVolume,
+        )
+        # self._player.set_property("volume", adjustedVolume)
         self._player.set_property("mute", self._muted)
+        return GstAudio.StreamVolume.get_volume(self._player, GstAudio.StreamVolumeFormat.CUBIC)  # type: ignore
 
     def mute(self, enabled: bool | None = None) -> bool:
         """Enable or disable mute.
@@ -359,6 +372,7 @@ class TB_Player:
     def play_url(self, url: str) -> None:
         """Start a web radio stream or a single media file."""
         try:
+            self._player.set_state(Gst.State.NULL)
             self._cancel_reconnect()
             self._stopping = False
             self._last_error = ""
@@ -471,6 +485,7 @@ class TB_Player:
         After stop(), the current entry can be started again.
         """
         try:
+            self._player.set_state(Gst.State.NULL)
             self._stopping = False
             self._cancel_reconnect()
             self._last_error = ""

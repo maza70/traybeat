@@ -8,6 +8,8 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
       .venv/bin/python -m pip install --upgrade pip
       .venv/bin/python -m pip install -e ".[dev]"
       .venv/bin/python -m pip install -e ".[appimage]"
+      .venv/bin/python -m pip install -e  .
+      
       
 
 )

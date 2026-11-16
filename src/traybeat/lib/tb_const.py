@@ -19,7 +19,7 @@ def _read_version() -> str:
 
 
 APP_ID = "de.maza.traybeat"
-APP_NAME = "TrayBeat"
+APP_NAME = "traybeat"
 APP_DBUS_PATH = "/de/maza/traybeat"
 APP_DBUS_PLAYER_SERVICE = "de.maza.traybeat.player"  # unique exportet name of the player interface do not change
 APP_VERSION = _read_version()

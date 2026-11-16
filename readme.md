@@ -47,7 +47,7 @@ sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugi
 ### Fedora
 
 ```bash
-sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good     gstreamer1-plugins-ugly-free gstreamer1-libav glib-networking
+sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly-free gstreamer1-libav glib-networking
 ```
 
 Once the dependencies are installed, you can copy the `traybeat<Version>-x86_64.AppImage` file to any location and make it executable with `chmod +x traybeat<Version>-x86_64.AppImage`. TrayBeat can then be started normally.

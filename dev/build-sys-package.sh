@@ -40,7 +40,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
       find ./build -type d -exec chmod 755 {} +
       find ./build -type f -exec chmod 644 {} +
       chmod +x ./build/usr/local/bin/traybeat
-      chmod 644  ./build/usr/share/applications/traybeat.desktop
+      chmod 644  ./build/usr/share/applications/de.maza.traybeat.desktop
 
       mkdir -p ./bin
       if [ ! -f "./bin/nfpm" ]; then

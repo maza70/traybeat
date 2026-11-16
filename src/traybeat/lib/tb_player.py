@@ -218,7 +218,8 @@ class TB_Player:
         old_value = self._volume
         if value == old_value:
             return
-        self._volume = self._apply_volume()
+        self._volume = value
+        self._apply_volume()
 
     @property
     def volume_delta(self) -> float:
@@ -274,7 +275,7 @@ class TB_Player:
             source.set_property("timeout", 5)
             self._logger.debug("Source timeout set to 5 seconds")
 
-    def _apply_volume(self) -> float:
+    def _apply_volume(self) -> None:
         """Apply the current volume and mute settings to GStreamer."""
         adjustedVolume = self._volume + self._volume_delta
         adjustedVolume = min(adjustedVolume, 1)
@@ -286,9 +287,7 @@ class TB_Player:
             GstAudio.StreamVolumeFormat.CUBIC,
             adjustedVolume,
         )
-        # self._player.set_property("volume", adjustedVolume)
         self._player.set_property("mute", self._muted)
-        return GstAudio.StreamVolume.get_volume(self._player, GstAudio.StreamVolumeFormat.CUBIC)  # type: ignore
 
     def mute(self, enabled: bool | None = None) -> bool:
         """Enable or disable mute.

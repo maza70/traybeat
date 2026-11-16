@@ -12,3 +12,4 @@ tests/files/temp
 /dist
 *.egg-info/
 scratchpad.md
+src/traybeat/test.py

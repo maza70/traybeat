@@ -481,6 +481,7 @@ class Core(TB_I_Core):
 
         finally:
             # Tray stop clean
+            self._gplayer.close()
             self._dbusPlayerService.unregister()
             await self._websocket.stop()
             await self._tray_icon.stop()

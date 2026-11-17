@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#e3e3e3"><path d="M5.5,18V6h2V18h-2Zm13,0l-9-6l9-6V18Zm-2-6Zm0,2.25V9.75L13.1,12l3.4,2.25Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px"  fill="currentColor">
+    <defs id="defs1"><style type="text/css" id="current-color-scheme">.ColorScheme-Text {color:#FFFFFF;}</style></defs>
+    <path class="ColorScheme-Text" style="fill:currentColor;fill-opacity:1"
+    d="M5.5,18V6h2V18h-2Zm13,0l-9-6l9-6V18Zm-2-6Zm0,2.25V9.75L13.1,12l3.4,2.25Z"/></svg>

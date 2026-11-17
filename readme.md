@@ -1,10 +1,8 @@
-**English** | [Deutsch](readme_de.md)
-
-<img src="docs/images/traybeat.png" width="96" alt="TrayBeat"><sub><small>ai generated document</small></sub>
+<img src="docs/images/traybeat.png" width="96" alt="TrayBeat">
 
 # TrayBeat
 
-TrayBeat is a small application that appears in the system tray as a small <img src="docs/images/traybeat.png" width="24" alt="TrayBeat"> icon.
+TrayBeat is a small application that appears in the system tray as a small icon.
 
 This small application lets you play web radio stations and M3U playlists without having a media player window getting in the way. It was primarily developed to let you listen to your favorite music uninterrupted in the background while still keeping control of the player.
 
@@ -25,6 +23,7 @@ This small application lets you play web radio stations and M3U playlists withou
     - Left mouse button: next web radio station or next track in the playlist.
     - Middle mouse button: stop/play.
     - Right mouse button: opens the context menu with all configured stations and TrayBeat actions.
+    - Mouse scroll: Volume up/down (only if the desktop environment support it like KDE with X11)
 
 ## Requirements
 
@@ -52,11 +51,30 @@ sudo dnf install gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good gstr
 
 Once the dependencies are installed, you can copy the `traybeat<Version>-x86_64.AppImage` file to any location and make it executable with `chmod +x traybeat<Version>-x86_64.AppImage`. TrayBeat can then be started normally.
 
+### Install desktop file 
+You can install or uninstall the desktop entry for your current user with the following commands:
+```
+# install desktop file
+traybeat<Version>-x86_64.AppImage --install_appimage
+
+# uninstall desktop file
+traybeat<Version>-x86_64.AppImage --uninstall_appimage
+```
+**Please note that the desktop entry points to the current AppImage file. It will no longer work if the AppImage is renamed or moved.**
 
 
-Installation as a Flatpak
 
-If you want to install TrayBeat as a Flatpak, the following command is sufficient: flatpak install --user de.maza.traybeat_<Version>.flatpak.
+## Installation as a Flatpak
+
+If you want to install TrayBeat as a Flatpak.
+
+```
+# first install
+flatpak install --user de.maza.traybeat_<Version>.flatpak
+
+# update install
+flatpak install --user de.maza.traybeat_<Version>.flatpak`.
+```
 
 Flatpak has the advantage that it requires no dependencies from the host system.
 
@@ -64,17 +82,27 @@ Flatpak has the advantage that it requires no dependencies from the host system.
 
 You can also easily install TrayBeat on your system using a DEB or RPM package. This will automatically install all additional packages required. Download the release from GitHub and save it in any directory.
 
-### Debian
+### Debian based
 
-```bash
+```
 sudo apt update
-sudo apt install ./traybeat_<Version>_amd64.deb
+
+# first install
+sudo apt install ./traybeat_<version>_amd64.deb
+
+# Update
+sudo apt install --reinstall ./traybeat_<version>_amd64.deb
 ```
 
-### Fedora
+### Fedora based
 
-```bash
-sudo dnf install install ./traybeat_<Version>_amd64.deb
+```
+# first install
+sudo dnf install ./traybeat_<version>_amd64.deb
+
+# Update
+sudo dnf reinstall ./traybeat_<version>_amd64.deb
+
 ```
 
 ## Uninstalling the configuration,cache and state
@@ -124,24 +152,32 @@ busctl --user call de.maza.traybeat.player /de/maza/traybeat de.maza.traybeat.pl
 
 ## TrayBeat command-line options
 
-TrayBeat can be started with various options. For a list of options and their descriptions, run `traybeat -h`.
+TrayBeat can be started with various options. For a list of options and their descriptions, run:
+```
+# if installed
+traybeat --help
+
+# if appImage
+traybeat<Version>-x86_64.AppImage --help
+``` 
+
+# Support & Feedback
+If you enjoy this project, I would really appreciate it if you could leave a ⭐ on GitHub. 
+It helps the project gain visibility and motivates me to keep improving it.
+    
+If you have any feedback, suggestions for improvements, or encounter a bug, please feel free to open an issue on GitHub.
+
+Thanks for your support! 
 
 ## Screenshots
 
-### The popup menu
+<img src="docs/images/traybeat_desktop.jpg"  alt="TrayBeat">
 
-<img src="docs/images/popup.jpg" width="196" alt="TrayBeat popup">
 
-### The station editor
+### Support for the MPRIS Interface 
 
-<img src="docs/images/station_editor.jpg" width="640" alt="TrayBeat station editor">
+TrayBeat supports the [MPRIS D-Bus Interface Specification](https://specifications.freedesktop.org/mpris/latest/).
+This interface allows other plugins and applications to control TrayBeat and display information about it, for example through the KDE Plasma Media Player widget.
+<img src="docs/images/media.jpg" alt="TrayBeat">
 
-### The integrated media player
 
-<img src="docs/images/traybeat_player.jpg" width="640" alt="TrayBeat media player">
-
-### KDE's built-in media player plasmoid
-
-TrayBeat can be controlled using the system's built-in "Media Player" plasmoid.
-
-<img src="docs/images/media.jpg" width="640" alt="TrayBeat">

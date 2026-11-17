@@ -25,7 +25,7 @@ APP_DBUS_PLAYER_SERVICE = "de.maza.traybeat.player"  # unique exportet name of t
 APP_VERSION = _read_version()
 ICON_NAME = "TrayBeat"
 APP_ICON = "de.maza.traybeat"
-DESKTOP_ENTRY_NAME = "tray-beat"
+
 CONFIG_PATH = user_config_path(APP_ID)
 TEMP_PATH = user_cache_path(APP_ID)
 STATE_PATH = user_state_path(APP_ID)

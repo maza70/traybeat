@@ -1,8 +1,9 @@
 from copy import deepcopy
 
-from traybeat.lib.tb_const import APP_ID, APP_NAME, DESKTOP_ENTRY_NAME
+from traybeat.lib.tb_const import APP_ID, APP_NAME
 from traybeat.lib.tb_i_core import PlayerChangedData, TB_CorePlayerInfo, TB_CorePlayerMeta, TB_I_Core
 from traybeat.lib.tb_player import TB_PlayerStatus
+from traybeat.lib.tb_util import TB_Util
 from traybeat.system.tb_mpris_player import TB_MPRISPlayer
 
 
@@ -14,7 +15,7 @@ class TB_MprisTrayBeat:
         self._mpris = TB_MPRISPlayer(
             app_id=APP_ID,
             identity=APP_NAME,
-            desktop_entry=DESKTOP_ENTRY_NAME,
+            desktop_entry=APP_ID,
             on_pause=lambda: self._core.player_toogle_pause(),
             on_play=lambda: self._core.player_play(),
             on_next=lambda: self._core.player_next(),
@@ -27,10 +28,22 @@ class TB_MprisTrayBeat:
 
     def _update_mipris_meta(self, meta: TB_CorePlayerMeta):
 
+        cover_url = meta.cover_file
+        if not TB_Util.is_url(meta.cover_file):
+            cover_url = f"file://{meta.cover_file}"
+
         track_number = 0
         if self._lastState.isPlayList:
             track_number = self._lastState.playlist_index
-        self._mpris.update_metadata(title=meta.title, artist=meta.artist, art_url=meta.cover_file, url=meta.cover_file, track_number=track_number)
+
+        self._mpris.update_metadata(
+            title=meta.title,
+            artist=meta.artist,
+            art_url=cover_url,
+            url=cover_url,
+            track_number=track_number,
+            album=meta.station_name,
+        )
 
     def _update_mipris_state(self, info: TB_CorePlayerInfo):
 

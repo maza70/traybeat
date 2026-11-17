@@ -2,12 +2,13 @@ import logging
 import subprocess
 from copy import deepcopy
 
-from traybeat.core.tb_config import TB_EntryType, TB_StationEntry, TB_StationsConfig
+from traybeat.core.tb_config import TB_StationEntry, TB_StationsConfig, TB_StationType
 from traybeat.gui.tb_icons import TB_Icons, TB_IconsName
 from traybeat.gui.tb_resource import TB_Resource
 from traybeat.gui.tb_tray_menu import TB_MenuItem, TB_TrayMenu
 from traybeat.lib.tb_const import APP_ID, APP_NAME
 from traybeat.lib.tb_dispatch import TB_Dispatch
+from traybeat.lib.tb_exception import TB_Exception
 from traybeat.lib.tb_i_core import (
     PlayerChangedData,
     TB_CorePlayerInfo,
@@ -30,7 +31,9 @@ class TrayIcon:
         disp: TB_Dispatch,
     ) -> None:
 
-        self._metaEntry: TB_MenuItem | None
+        self._metaEntry: TB_MenuItem | None = None
+        self._playerInfoEntry: TB_MenuItem | None = None
+
         self._station_editor_url: str = ""
         self._about_url: str = ""
         self._player_controls_url: str = ""
@@ -72,6 +75,12 @@ class TrayIcon:
     def _on_stop_clicked(self, item: TB_MenuItem):
         self._core.player_stop()
 
+    def _on_next_clicked(self, item: TB_MenuItem):
+        self._core.player_next()
+
+    def _on_previous_clicked(self, item: TB_MenuItem):
+        self._core.player_previous()
+
     def _on_edit_stations_clicked(self, item: TB_MenuItem):
         subprocess.Popen(["xdg-open", self._station_editor_url])
 
@@ -84,6 +93,12 @@ class TrayIcon:
     def _on_quit_clicked(self, item: TB_MenuItem):
         self._core.quit()
 
+    def _on_volume(self, volume: int):
+        self._core.player_set_volume(volume)
+
+    def _on_volume_delta(self, delta: int):
+        self._core.player_volume_step(delta)
+
     def _on_player_changed(self, data: PlayerChangedData):
         if data.meta is not None:
             self._lastMeta = deepcopy(data.meta)
@@ -91,6 +106,7 @@ class TrayIcon:
         if data.player_info is not None:
             self._lastPlayerState = deepcopy(data.player_info)
             self._icon_update(self._lastPlayerState)
+            self._playerStateUpdate(self._lastPlayerState)
 
         self._tooltipp_update(self._lastMeta, self._lastPlayerState)
 
@@ -101,7 +117,7 @@ class TrayIcon:
             return
 
         if self._core.current_station is not None and playerState is not None:
-            if self._core.current_station.type == TB_EntryType.PLAYLIST:
+            if self._core.current_station.type == TB_StationType.PLAYLIST:
                 stationInfo = f"Playlist:{self._core.current_station.caption} [{playerState.playlist_index + 1}/{playerState.playlist_length}]\n"
             else:
                 stationInfo = f"Webradio: {self._core.current_station.caption}\n"
@@ -112,7 +128,7 @@ class TrayIcon:
                 if meta.artist != "":
                     stationInfo += f"{meta.artist}\n"
 
-            stationInfo += "\n" + f"Volume  :{playerState.volume}%\n" + f"Gain    :{playerState.volume_gain}\n" + f"Status  :{playerState.state}\n"
+            stationInfo += "\n" + f"Volume: {playerState.volume}%\n" + f"Gain: {playerState.volume_gain}\n" + f"Status: {playerState.state}\n"
         self._tray_icon.set_tooltip(title="TrayBeat", description=stationInfo)
 
     def _meta_item_update(self, meta: TB_CorePlayerMeta):
@@ -126,6 +142,10 @@ class TrayIcon:
             else:
                 text = "-= no station =-"
             self._metaEntry.label = text
+
+    def _playerStateUpdate(self, playerState: TB_CorePlayerInfo):
+        if self._playerInfoEntry is not None:
+            self._playerInfoEntry.label = f"Volume: {playerState.volume}% [{playerState.state}]"
 
     def _icon_update(self, playerState: TB_CorePlayerInfo):
         match playerState.state:
@@ -149,6 +169,9 @@ class TrayIcon:
         self._metaEntry = TB_MenuItem("- not playing -", enabled=False)
         menu.append(self._metaEntry)
         menu.append(TB_MenuItem(separator=True))
+        self._playerInfoEntry = TB_MenuItem("volume: -- status: --", enabled=False)
+        menu.append(self._playerInfoEntry)
+        menu.append(TB_MenuItem(separator=True))
 
         def traverse(entries: list[TB_StationEntry] | None, parentItem: TB_MenuItem | None) -> None:
             if not entries:
@@ -156,7 +179,7 @@ class TrayIcon:
             newItem: TB_MenuItem | None = None
             for entry in entries:
                 match entry.type:
-                    case TB_EntryType.WEBRADIO:
+                    case TB_StationType.WEBRADIO:
                         newItem = TB_MenuItem(
                             label=entry.caption or "",
                             icon=self._icons.GetIcon(TB_IconsName.WEBRADIO),
@@ -164,7 +187,7 @@ class TrayIcon:
                             user_data=entry,
                         )
 
-                    case TB_EntryType.PLAYLIST:
+                    case TB_StationType.PLAYLIST:
                         newItem = TB_MenuItem(
                             label=entry.caption or "",
                             icon=self._icons.GetIcon(TB_IconsName.PLAYLIST),
@@ -172,10 +195,10 @@ class TrayIcon:
                             user_data=entry,
                         )
 
-                    case TB_EntryType.SEPARATOR:
+                    case TB_StationType.SEPARATOR:
                         newItem = TB_MenuItem(separator=True)
 
-                    case TB_EntryType.FOLDER:
+                    case TB_StationType.FOLDER:
                         newItem = TB_MenuItem(
                             label=entry.caption or "",
                             icon=self._icons.GetIcon(TB_IconsName.FOLDER),
@@ -183,7 +206,7 @@ class TrayIcon:
                         )
                         traverse(entry.items, newItem)
                     case _:
-                        raise TT_Exception("Unknown entry type.")
+                        raise TB_Exception("Unknown entry type.")
                 if parentItem is not None:
                     parentItem.append(newItem)
                 else:
@@ -191,9 +214,32 @@ class TrayIcon:
 
         traverse(stations.stations, None)
         menu.append(TB_MenuItem(separator=True))
-        menu.append(TB_MenuItem(label="Play", icon=self._icons.GetIcon(TB_IconsName.PLAY), callback=lambda item: self._on_play_clicked(item)))
-        menu.append(TB_MenuItem(label="Pause", icon=self._icons.GetIcon(TB_IconsName.PAUSE), callback=lambda item: self._on_pause_clicked(item)))
-        menu.append(TB_MenuItem(label="Stop", icon=self._icons.GetIcon(TB_IconsName.STOP), callback=lambda item: self._on_stop_clicked(item)))
+        controls = TB_MenuItem(label="Playback Controls")
+        controls.append(TB_MenuItem(label="Play", icon=self._icons.GetIcon(TB_IconsName.PLAY), callback=lambda item: self._on_play_clicked(item)))
+        controls.append(TB_MenuItem(label="Pause", icon=self._icons.GetIcon(TB_IconsName.PAUSE), callback=lambda item: self._on_pause_clicked(item)))
+        controls.append(TB_MenuItem(label="Stop", icon=self._icons.GetIcon(TB_IconsName.STOP), callback=lambda item: self._on_stop_clicked(item)))
+        controls.add_separator()
+        controls.append(
+            TB_MenuItem(label="Next track/radio", icon=self._icons.GetIcon(TB_IconsName.NEXT), callback=lambda item: self._on_next_clicked(item))
+        )
+        controls.append(
+            TB_MenuItem(
+                label="Previous track/radio", icon=self._icons.GetIcon(TB_IconsName.PREVIOUS), callback=lambda item: self._on_previous_clicked(item)
+            )
+        )
+        menu.append(controls)
+
+        volume = TB_MenuItem(label="Volume")
+        volume.add_item(label="up", icon=self._icons.GetIcon(TB_IconsName.VOLUME_UP), callback=lambda item: self._on_volume_delta(5))
+        volume.add_item(label="down", icon=self._icons.GetIcon(TB_IconsName.VOLUME_DOWN), callback=lambda item: self._on_volume_delta(-5))
+        volume.add_separator()
+        volume.add_item(label="100 %", callback=lambda item: self._on_volume(100))
+        volume.add_item(label="75 %", callback=lambda item: self._on_volume(75))
+        volume.add_item(label="50 %", callback=lambda item: self._on_volume(50))
+        volume.add_item(label="25 %", callback=lambda item: self._on_volume(25))
+        volume.add_item(label="12 %", callback=lambda item: self._on_volume(12))
+        menu.append(volume)
+
         menu.append(TB_MenuItem(separator=True))
 
         traybeat_menu = TB_MenuItem(

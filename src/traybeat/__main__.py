@@ -8,8 +8,9 @@ import types
 from pathlib import Path
 
 from traybeat.core.core import Core
-from traybeat.core.tb_config import TB_StartupConfig
+from traybeat.core.tb_app_image import TB_AppImage
 from traybeat.lib.tb_const import APP_NAME, APP_VERSION, TEMP_PATH
+from traybeat.lib.tb_i_core import TB_StartupConfig
 
 
 def acquire_single_instance_lock():
@@ -78,10 +79,29 @@ async def run() -> None:
         default="dark",
         help="Set icon theme (Standard: %(default)s).",
     )
+    parser.add_argument(
+        "--install_appimage",
+        action="store_true",
+        help="Install the AppImage desktop entry for the current user.",
+    )
+    parser.add_argument(
+        "--uninstall_appimage",
+        action="store_true",
+        help="Uninstall the AppImage desktop entry for the current user.",
+    )
 
     parser.add_argument("-p", "--play", action="store_true", help="Automatically plays the last station played.")
     args = parser.parse_args()
     startupConfig = TB_StartupConfig()
+    if args.uninstall_appimage == True:
+        installer = TB_AppImage()
+        installer.uninstall()
+        return
+    if args.install_appimage == True:
+        installer = TB_AppImage()
+        installer.install()
+        return
+
     if args.logfile is not None:
         startupConfig.logFile = Path(str(args.logfile).strip()).expanduser().absolute()
     if args.play == True:

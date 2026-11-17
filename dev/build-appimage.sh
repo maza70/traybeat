@@ -8,13 +8,13 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
     cd ${ROOT_DIR}
     VERSION=$(sed -n 's/^version *= *"\(.*\)"/\1/p' ${ROOT_DIR}/pyproject.toml | head -n1)
-    CREATE_LOCK_FILES=false
     
+    FULL=false
     for ARG in "$@"; do
         case "$ARG" in
-            --lock) CREATE_LOCK_FILES=true ;;
+            --full) FULL=true ;;
             *)
-                echo "Usage: $0 --lock"
+                echo "Usage: $0 [--full]"
                 exit 1
                 ;;
         esac
@@ -30,7 +30,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
         exit 1
     fi
 
-    if [[ "$CREATE_LOCK_FILES" == true ]]; then
+    if [[ "$FULL" == true ]]; then
         # update lock and hashes  
         echo "== update tools and locks =="
         python -m appimage.ctl update-tools
@@ -38,17 +38,25 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
     fi
     
     echo "== Check AppImage-Configuration =="
-    "$PYTHON" -m appimage.ctl check
+    if [[ "$FULL" == true ]]; then
+        "$PYTHON" -m appimage.ctl check
+    fi
 
 
-    echo "== AppImage bauen =="
-    "$PYTHON" -m appimage.ctl build --require-pylock --require-build-pylock
-
-    rm -rf ${ROOT_DIR}/build
+    
+    if [[ "$FULL" == true ]]; then
+        echo "== AppImage full build =="
+        "$PYTHON" -m appimage.ctl build --require-pylock --require-build-pylock
+        rm -rf ${ROOT_DIR}/build
+    else
+        echo "== AppImage build =="
+        "$PYTHON" -m appimage.ctl build --reproducible  
+    fi    
     mv ./dev/dist/*.AppImage ./dev/dist/de.maza.traybeat_$VERSION-x86_64.AppImage
     
 
     ls -hal ./dev/dist/*.AppImage
-    echo
+    echo "-----------------------------------------------------------"
     echo "finish appimage created successfully."
+    echo "-----------------------------------------------------------"
 )

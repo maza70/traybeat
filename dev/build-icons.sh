@@ -29,7 +29,12 @@ count=0
 
 
 while IFS= read -r -d '' svg; do
+    # only SVG with currentColor
+    if ! grep -q 'currentColor' "$svg"; then
+        continue
+    fi
     filename="$(basename "$svg" .svg)"
+
 
     for variant in dark light; do
         if [[ "$variant" == "light" ]]; then

@@ -624,7 +624,7 @@ class TB_MPRISPlayer:
 
             self._track_id = new_track_id
             self._metadata = metadata
-            #  self._logger.debug("Published metadata: %r", self._metadata)
+            self._logger.debug("Published mpris metadata: %r", self._metadata)
             self._notify_properties("org.mpris.MediaPlayer2.Player", {"Metadata": metadata})
 
         self._run_on_loop(update)

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dacite import Config, from_dict
 
-from traybeat.core.tb_config import TB_EntryType, TB_StationEntry
+from traybeat.core.tb_config import TB_StationEntry, TB_StationType
 from traybeat.lib.tb_const import STATE_PATH
 from traybeat.lib.tb_exception import TB_Exception
 from traybeat.lib.tb_player import PlayerStatus
@@ -56,7 +56,7 @@ class TB_State:
 
     def update_station_state(self, station: TB_StationEntry, playerState: PlayerStatus):
         self._state.lastStationId = station.uniqueId
-        if station.type == TB_EntryType.PLAYLIST:
+        if station.type == TB_StationType.PLAYLIST:
             self._state.stationStates[station.uniqueId] = TB_StationState(
                 playlist_index=playerState.playlist_index, playlist_song_pos=playerState.playlist_song_position
             )

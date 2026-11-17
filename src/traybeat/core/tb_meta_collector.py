@@ -10,7 +10,7 @@ from typing import Any
 
 from PIL import Image, ImageFile
 
-from traybeat.core.tb_config import TB_EntryType, TB_StationEntry
+from traybeat.core.tb_config import TB_StationEntry, TB_StationType
 from traybeat.core.tb_cover_fetch import TB_CoverFetch
 from traybeat.gui.tb_resource import TB_Resource
 from traybeat.lib.tb_const import TEMP_PATH
@@ -135,7 +135,7 @@ class TB_MetaCollector:
             self._logger.debug("set generic cover")
             collectMeta.cover_mimetype = mimetype or "image/png"
             self._current_cover_file = Path(self._temp_dir, f"{guid}.png")
-            if self._currentStation.type == TB_EntryType.PLAYLIST:
+            if self._currentStation.type == TB_StationType.PLAYLIST:
                 self._current_cover_file.write_bytes(TB_Resource.get_bytes("png", "cover_mp3.png"))
             else:
                 self._current_cover_file.write_bytes(TB_Resource.get_bytes("png", "cover_webradio.png"))

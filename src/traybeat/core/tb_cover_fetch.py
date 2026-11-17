@@ -1,9 +1,12 @@
 import asyncio
 import io
 import logging
+import os
 import threading
 from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
+from pathlib import Path
+from urllib.parse import unquote, urlparse
 from urllib.request import urlopen
 
 from PIL import Image, ImageFile
@@ -34,6 +37,12 @@ class TB_CoverFetch:
         """
         try:
             self._logger.debug(f"Fetch cover from {url}")
+            parsed = urlparse(url)
+            if parsed.scheme == "file":
+                path = Path(unquote(parsed.path))
+                if not path.is_file() or not os.access(path, os.R_OK):
+                    self._logger.error(f"File not exists or accessable: {path} ")
+                    return
 
             # Open URL and read the response data
             with urlopen(url, timeout=10) as response:

@@ -4,30 +4,30 @@ echo "---===== build Flatpak  =====---- "
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
 
-SKIP_PIP_GENERATOR=false
+
 INSTALL_RUN=false
-for ARG in "$@"; do
-    case "$ARG" in
-        -sp) SKIP_PIP_GENERATOR=true ;;
-        -ir) INSTALL_RUN=true ;;
-        *)
-            echo "Usage: $0 [-sp] [-ir]"
-            exit 1
-            ;;
-    esac
-done
+FULL=false
 
 (
-    #flatpak install --user flathub \
-    #org.gnome.Platform//51 \
-    #org.gnome.Sdk//51
+    for ARG in "$@"; do
+        case "$ARG" in
+            --full) FULL=true ;;
+
+            -ir) INSTALL_RUN=true ;;
+            *)
+                echo "Usage: $0 [--full] [-ir]"
+                exit 1
+                ;;
+        esac
+    done
+
 
     cd ${ROOT_DIR}
     mkdir -p ./dev/dist
     export VERSION=$(sed -n 's/^version *= *"\(.*\)"/\1/p' ${ROOT_DIR}/pyproject.toml | head -n1)
-    echo "SKIP_PIP_GENERATOR= $SKIP_PIP_GENERATOR"
+    echo "FULL= $FULL"
     echo "INSTALL_RUN       = $INSTALL_RUN"
-    if [[ "$SKIP_PIP_GENERATOR" == false ]]; then
+    if [[ "$FULL" == true ]]; then
         echo "---===== run flatpak-pip-generator =====---- "
         PIP_GENERATOR="./dev/flatpak/flatpak-pip-generator.py"
         if [[ ! -f "$PIP_GENERATOR" ]]; then
@@ -67,4 +67,7 @@ done
     if [[ "$INSTALL_RUN" == true ]]; then
         flatpak install --user  --reinstall -y  ./dev/dist/de.maza.traybeat_$VERSION.flatpak && flatpak run de.maza.traybeat -p     
     fi    
+    echo "-----------------------------------------------------------"
+    echo "finish flatpak created successfully."
+    echo "-----------------------------------------------------------"
 )

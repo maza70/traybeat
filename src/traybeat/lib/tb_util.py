@@ -1,9 +1,11 @@
+import inspect
 import os
 import shutil
 import sys
 import threading
 import traceback
 from pathlib import Path
+from urllib.parse import urlparse
 
 from gi.repository import Gio, GLib  # type: ignore
 
@@ -79,3 +81,39 @@ class TB_Util:
                 traceback.print_stack(frame)
             else:
                 print("No Python stack available.")
+
+    @staticmethod
+    def log_memory(stage: str = "") -> None:
+        """Log current resident memory usage and caller information."""
+        try:
+            frame = inspect.currentframe()
+            caller = frame.f_back if frame else None
+
+            if caller:
+                filename = caller.f_code.co_filename
+                function = caller.f_code.co_name
+                lineno = caller.f_lineno
+                caller_info = f"{filename}:{lineno} ({function})"
+            else:
+                caller_info = "unknown"
+
+            with open("/proc/self/status", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("VmRSS:"):
+                        print(
+                            f"[RAM] {stage}: {line.split(':')[1].strip()} | Caller: {caller_info}",
+                            flush=True,
+                        )
+                        return
+        except OSError:
+            pass
+        finally:
+            del frame  # type: ignore
+
+    @staticmethod
+    def is_url(value: str) -> bool:
+        parsed = urlparse(value)
+
+        if parsed.scheme in ("http", "https"):
+            return True
+        return False

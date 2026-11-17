@@ -4,6 +4,16 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
 
 (
+      FULL=false
+      for ARG in "$@"; do
+            case "$ARG" in
+                  --full) FULL=true ;;
+                  *)
+                        echo "Usage: $0 [--full]"
+                        exit 1
+                        ;;
+            esac
+      done
       export VERSION=$(sed -n 's/^version *= *"\(.*\)"/\1/p' ${ROOT_DIR}/pyproject.toml | head -n1)
       export YEAR=$(date +%Y)      
       export FULLDATE=$(LC_ALL=C date -R)

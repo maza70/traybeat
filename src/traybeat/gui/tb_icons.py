@@ -13,6 +13,10 @@ class TB_IconsName(Enum):
     PAUSE = auto()
     STOP = auto()
     MUTE = auto()
+    NEXT = auto()
+    PREVIOUS = auto()
+    VOLUME_UP = auto()
+    VOLUME_DOWN = auto()
     QUIT = auto()
     FOLDER = auto()
     PLAYLIST = auto()
@@ -30,6 +34,11 @@ class TB_Icons:
             TB_IconsName.STOP: TB_Resource.get_path(f"png/{icon_theme}", "stop.png"),
             TB_IconsName.PLAY: TB_Resource.get_path(f"png/{icon_theme}", "play.png"),
             TB_IconsName.QUIT: TB_Resource.get_path(f"png/{icon_theme}", "exit.png"),
+            TB_IconsName.FOLDER: TB_Resource.get_path(f"png/{icon_theme}", "folder.png"),
+            TB_IconsName.NEXT: TB_Resource.get_path(f"png/{icon_theme}", "skip_next.png"),
+            TB_IconsName.PREVIOUS: TB_Resource.get_path(f"png/{icon_theme}", "skip_previous.png"),
+            TB_IconsName.VOLUME_UP: TB_Resource.get_path(f"png/{icon_theme}", "volume_up.png"),
+            TB_IconsName.VOLUME_DOWN: TB_Resource.get_path(f"png/{icon_theme}", "volume_down.png"),
             TB_IconsName.FOLDER: TB_Resource.get_path(f"png/{icon_theme}", "folder.png"),
             TB_IconsName.CONFIG: TB_Resource.get_path(f"png/{icon_theme}", "edit.png"),
             TB_IconsName.INFO: TB_Resource.get_path(f"png/{icon_theme}", "info.png"),

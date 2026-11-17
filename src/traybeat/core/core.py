@@ -20,13 +20,7 @@ from gi.repository import (
     GLib,  # type: ignore
 )
 
-from traybeat.core.tb_config import (
-    TB_Config,
-    TB_EntryType,
-    TB_StartupConfig,
-    TB_StationEntry,
-    TB_StationsConfig,
-)
+from traybeat.core.tb_config import TB_Config
 from traybeat.core.tb_http_server import TB_HttpAction, TB_HttpServer
 from traybeat.core.tb_meta_collector import TB_MetaCollector
 from traybeat.core.tb_state import TB_State
@@ -43,6 +37,10 @@ from traybeat.lib.tb_i_core import (
     TB_CorePlayerMeta,
     TB_CorePlayerState,
     TB_I_Core,
+    TB_StartupConfig,
+    TB_StationEntry,
+    TB_StationsConfig,
+    TB_StationType,
 )
 from traybeat.lib.tb_player import (
     TB_Player,
@@ -183,11 +181,11 @@ class Core(TB_I_Core):
         self._gplayer.volume_delta = station.volumeDelta / 100
         self._currentStation = station
 
-        if station.type == TB_EntryType.WEBRADIO:
+        if station.type == TB_StationType.WEBRADIO:
             self._logger.info(f"play:{station.caption} volume adjust:{station.volumeDelta}% filename:{station.url}")
             self._gplayer.play_url(station.url)  # type: ignore
 
-        elif station.type == TB_EntryType.PLAYLIST:
+        elif station.type == TB_StationType.PLAYLIST:
             self._logger.info(f"play:{station.caption} volume adjust:{station.volumeDelta}% filename:{station.path}")
             state = TB_State()
             stationState = state.get_station_state(station.uniqueId)
@@ -251,11 +249,11 @@ class Core(TB_I_Core):
         if self._currentStation is None:
             self._logger.warning("play previous not possible, no curent station")
             return
-        if self._currentStation.type == TB_EntryType.PLAYLIST:
+        if self._currentStation.type == TB_StationType.PLAYLIST:
             self._logger.info("play previous song in playlist")
             self._gplayer.previous()
         else:
-            prev_station = self._config.get_previous_station(self._currentStation.uniqueId, TB_EntryType.WEBRADIO)
+            prev_station = self._config.get_previous_station(self._currentStation.uniqueId, TB_StationType.WEBRADIO)
             if prev_station is not None:
                 self._logger.info("play previous webradio station.")
                 self._gplayer_play(prev_station)
@@ -270,11 +268,11 @@ class Core(TB_I_Core):
         if self._currentStation is None:
             self._logger.warning("play next not possible, no curent station")
             return
-        if self._currentStation.type == TB_EntryType.PLAYLIST:
+        if self._currentStation.type == TB_StationType.PLAYLIST:
             self._logger.info("play next song in playlist")
             self._gplayer.next()
         else:
-            nextStation = self._config.get_next_station(self._currentStation.uniqueId, TB_EntryType.WEBRADIO)
+            nextStation = self._config.get_next_station(self._currentStation.uniqueId, TB_StationType.WEBRADIO)
             if nextStation is not None:
                 self._logger.info("play next webradio station.")
                 self._gplayer_play(nextStation)
@@ -326,7 +324,19 @@ class Core(TB_I_Core):
 
     def player_meta(self) -> TB_CorePlayerMeta:
         meta = self._meta_collector.current_meta
-        return TB_CorePlayerMeta(artist=meta.artist, title=meta.title, cover_file=meta.cover_file, cover_mimetype=meta.cover_mimetype)
+
+        result = TB_CorePlayerMeta(
+            artist=meta.artist,
+            title=meta.title,
+            cover_file=meta.cover_file,
+            cover_mimetype=meta.cover_mimetype,
+        )
+        if self.current_station is not None:
+            result.station_id = self.current_station.uniqueId
+            result.station_name = self.current_station.caption if self.current_station.caption else APP_NAME
+            result.station_type = self.current_station.type
+
+        return result
 
     def player_changed_subscribe(self, onchanged: OnCorePlayerChanged):
         """subscript to notify when state or meta is changed"""
@@ -388,7 +398,7 @@ class Core(TB_I_Core):
                     data=server.config,
                     config=Config(
                         type_hooks={
-                            TB_EntryType: TB_EntryType,
+                            TB_StationType: TB_StationType,
                         },
                         check_types=True,
                         strict=False,

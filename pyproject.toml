@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "traybeat"
-version = "0.1.3"
+version = "0.1.4"
 description = "Webradio and playlist player that runs in the tray"
 requires-python = ">=3.13"
 dependencies = [

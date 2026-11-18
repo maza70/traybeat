@@ -47,7 +47,7 @@ class TB_MprisTrayBeat:
 
     def _update_mipris_state(self, info: TB_CorePlayerInfo):
 
-        self._mpris.update_volume(info.volume)
+        self._mpris.update_volume(info.volume / 100.0)
 
         match info.state:
             case TB_PlayerStatus.PAUSED:

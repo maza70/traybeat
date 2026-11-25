@@ -20,8 +20,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest","PyGObject-stubs","nfp","build","pyright","ruff","requirements-parser","pytest-asyncio","appimage"]
 appimage = [
-    "PyGObject>=3.58.1",
-    "pycairo>=1.29.2",
+    "PyGObject>=3.42.0",
+    "pycairo>=1.20.0",
 ]
 [tool.setuptools]
 py-modules = ["player"]

@@ -55,7 +55,7 @@ class TrayIcon:
             self._core.player_stop()
 
     def _on_scroll(self, delta: int, orientation: str) -> None:
-        if orientation == "Vertical":
+        if orientation.lower() == "vertical":
             if delta > 0:
                 delta = 5
             else:

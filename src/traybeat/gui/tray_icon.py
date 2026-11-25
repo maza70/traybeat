@@ -166,10 +166,13 @@ class TrayIcon:
 
     def _make_menu(self, stations: TB_StationsConfig, menu: TB_TrayMenu):
         menu.clear()
-        self._metaEntry = TB_MenuItem("- not playing -", enabled=False)
+        if self._metaEntry is None: 
+            self._metaEntry = TB_MenuItem("- not playing -", enabled=False)
+        
         menu.append(self._metaEntry)
         menu.append(TB_MenuItem(separator=True))
-        self._playerInfoEntry = TB_MenuItem("volume: -- status: --", enabled=False)
+        if self._playerInfoEntry is None: 
+            self._playerInfoEntry = TB_MenuItem("volume: -- status: --", enabled=False)
         menu.append(self._playerInfoEntry)
         menu.append(TB_MenuItem(separator=True))
 

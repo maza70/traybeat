@@ -137,7 +137,7 @@ class Core(TB_I_Core):
         self._tray_icon.player_controls_url = self._httpServer.player_controls_url
         # update check
         self._updateCheck = TB_Github(
-            APP_VERSION, delay=10, retry_delay=30 * 160, max_retries=10, on_update=lambda updateInfo: self._tray_icon.update_available(updateInfo)
+            APP_VERSION, delay=10 * 60, retry_delay=30 * 60, max_retries=10, on_update=lambda updateInfo: self._tray_icon.update_available(updateInfo)
         )
 
     # -------------------------------------------------------------------

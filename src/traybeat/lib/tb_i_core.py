@@ -135,9 +135,9 @@ class TB_StartupConfig:
     logFile: Path | None = None
     traceLevel: str = "INFO"
     webserver_port: int = 0
-    webserver_bind: str = "localhost"
+    webserver_bind: str = "127.0.0.1"
     websocket_port: int = 0
-    websocket_bind: str = "localhost"
+    websocket_bind: str = "127.0.0.1"
     icon_theme: str = "dark"
     play: bool | None = None
 

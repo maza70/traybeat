@@ -54,6 +54,7 @@ const elements = {
 
 
 function setConnection(connected, message) {
+  console.debug("connection: connected=",connected," message=",message)
   elements.connectionDot.classList.toggle("connected", connected);
   elements.connectionText.textContent = message;
 }
@@ -86,6 +87,7 @@ function handleMeta(message) {
 }
 
 function handlePlayerInfo(message) {
+  
   const station = message.station || {};
   AppUtils.setText(elements.type, station.type);
   AppUtils.setText(elements.stationType, station.type ? station.type.toUpperCase() : "NOW PLAYING");
@@ -124,6 +126,7 @@ function handlePlayerInfo(message) {
 
 function handleMessage(event) {
   let message;
+  console.debug("websoket-event:",event)
   try {
     message = JSON.parse(event.data);
   } catch (error) {
@@ -145,7 +148,7 @@ function connectWebSocket() {
     setConnection(false, "WebSocket URL not configured");
     return;
   }
-
+  console.debug("websocket connect to:", PLAYER_CONFIG.WEBSOCKET_URL);
   const client = new WebSocketClient(PLAYER_CONFIG.WEBSOCKET_URL, {
     onOpen: () => setConnection(true, "Connected"),
     onMessage: handleMessage,

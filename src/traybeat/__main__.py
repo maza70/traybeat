@@ -56,7 +56,7 @@ async def run() -> None:
     parser.add_argument(
         "--bind",
         type=str,
-        default="localhost",
+        default="127.0.0.1",
         help="Internal webserver binding address (Standard: %(default)s).",
     )
     parser.add_argument(
@@ -69,7 +69,7 @@ async def run() -> None:
     parser.add_argument(
         "--ws_bind",
         type=str,
-        default="localhost",
+        default="127.0.0.1",
         help="Internal websocket server binding address (Standard: %(default)s).",
     )
     parser.add_argument(

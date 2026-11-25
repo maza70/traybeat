@@ -10,10 +10,10 @@ import pytest
 from traybeat.core.tb_config import (
     INIT_STATIONS,
     TB_Config,
-    TB_EntryType,
     TB_StationEntry,
 )
 from traybeat.lib.tb_exception import TB_Exception
+from traybeat.lib.tb_i_core import TB_StationType
 
 
 def test_StationConfig():
@@ -75,25 +75,25 @@ def test_nextStation():
     subject = TB_Config()
     stationsConfig = copy.deepcopy(INIT_STATIONS)
     subject._validateStationConfig(stationsConfig)
-    next_station = subject.get_next_station("1234", TB_EntryType.WEBRADIO)
+    next_station = subject.get_next_station("1234", TB_StationType.WEBRADIO)
     assert next_station is None
 
-    next_station = subject.get_next_station(stationsConfig.stations[2].uniqueId, TB_EntryType.WEBRADIO)  # type: ignore
+    next_station = subject.get_next_station(stationsConfig.stations[2].uniqueId, TB_StationType.WEBRADIO)  # type: ignore
     assert next_station is not None
     assert next_station.uniqueId == stationsConfig.stations[0].uniqueId
 
-    next_station = subject.get_next_station(stationsConfig.stations[0].uniqueId, TB_EntryType.WEBRADIO)  # type: ignore
+    next_station = subject.get_next_station(stationsConfig.stations[0].uniqueId, TB_StationType.WEBRADIO)  # type: ignore
     assert next_station is not None
     assert next_station.uniqueId == stationsConfig.stations[2].uniqueId
 
-    next_station = subject.get_next_station(stationsConfig.stations[0].uniqueId, TB_EntryType.PLAYLIST)  # type: ignore
+    next_station = subject.get_next_station(stationsConfig.stations[0].uniqueId, TB_StationType.PLAYLIST)  # type: ignore
     assert next_station is not None
     assert stationsConfig.stations[3].items is not None
     assert next_station.uniqueId == stationsConfig.stations[3].items[0].uniqueId
 
     # test if no station with the type in list
     stationsConfig.stations.remove(stationsConfig.stations[3])  # remove playlistfolder no playlists in stations
-    next_station = subject.get_next_station("12", TB_EntryType.PLAYLIST)
+    next_station = subject.get_next_station("12", TB_StationType.PLAYLIST)
     assert next_station is None
 
 
@@ -101,7 +101,7 @@ def test_prevStation():
     subject = TB_Config()
     stationsConfig = copy.deepcopy(INIT_STATIONS)
     subject._validateStationConfig(stationsConfig)
-    prev_station = subject.get_previous_station("1234", TB_EntryType.WEBRADIO)
+    prev_station = subject.get_previous_station("1234", TB_StationType.WEBRADIO)
     assert prev_station is None
 
     prev_station = subject.get_previous_station(stationsConfig.stations[2].uniqueId, TB_EntryType.WEBRADIO)  # type: ignore
@@ -118,5 +118,5 @@ def test_prevStation():
 
     # test if no station with the type in list
     stationsConfig.stations.remove(stationsConfig.stations[3])  # remove playlistfolder no playlists in stations
-    prev_station = subject.get_previous_station("12", TB_EntryType.PLAYLIST)
+    prev_station = subject.get_previous_station("12", TB_StationType.PLAYLIST)
     assert prev_station is None

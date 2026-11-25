@@ -14,14 +14,14 @@ sha256 = "1d4bff605dad7b202bc2607562b663c316f7126f8c7af6098d669a4b9f207d01"
 
 [[packages]]
 name = "dacite"
-version = "1.9.2"
+version = "1.9.3"
 
 [[packages.wheels]]
-name = "dacite-1.9.2-py3-none-any.whl"
-url = "https://files.pythonhosted.org/packages/94/35/386550fd60316d1e37eccdda609b074113298f23cef5bddb2049823fe666/dacite-1.9.2-py3-none-any.whl"
+name = "dacite-1.9.3-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/07/37/b65fe29f4dd0edb6c550916439bda4b351f1bda385740ebe29a4fcc1fead/dacite-1.9.3-py3-none-any.whl"
 
 [packages.wheels.hashes]
-sha256 = "053f7c3f5128ca2e9aceb66892b1a3c8936d02c686e707bee96e19deef4bc4a0"
+sha256 = "709a5ce19b3e888ddc488aa07c3cb6c9829197645e5ecd4e517a7cc1d9f40529"
 
 [[packages]]
 name = "dbus-next"
@@ -47,14 +47,14 @@ sha256 = "5f56499c1a74d2b862beb0c33b8016f99d095858455df9d21583bbbc1c15b582"
 
 [[packages]]
 name = "platformdirs"
-version = "4.14.5"
+version = "4.14.8"
 
 [[packages.wheels]]
-name = "platformdirs-4.14.5-py3-none-any.whl"
-url = "https://files.pythonhosted.org/packages/7c/ae/ecbbbfd0e4343a6a521d49b3c8656fb4643dee2a4f6eaf941cf3280391a8/platformdirs-4.14.5-py3-none-any.whl"
+name = "platformdirs-4.14.8-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/5b/be/373cc7341f53bfd3acba3e5db62433fd960a45fcf73ad64a5f4d27e74910/platformdirs-4.14.8-py3-none-any.whl"
 
 [packages.wheels.hashes]
-sha256 = "8e778c6fa421516f4d3369449f8df3b0e1b72c0e0005fe88e3ec772d0a14e750"
+sha256 = "1e34af590de4d978631b751eb2202f2fee4497537a17c1720b12fcf57b331392"
 
 [[packages]]
 name = "pycairo"

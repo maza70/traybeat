@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "---===== build AppImage  =====---- "
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+
+
+print_header "---===== build AppImage  =====----"
+
 (
 
 
@@ -14,7 +21,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
         case "$ARG" in
             --full) FULL=true ;;
             *)
-                echo "Usage: $0 [--full]"
+                print_info "Usage: $0 [--full]"
                 exit 1
                 ;;
         esac
@@ -26,18 +33,20 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
     mkdir -p  ./dev/dist
     mkdir -p  ./dev/build
     if [[ ! -x "$PYTHON" ]]; then
-        echo "error: $PYTHON miss. Please install appimage.ctl in the .venv." >&2
+        print_error "error: $PYTHON miss. Please install appimage.ctl in the .venv."
         exit 1
     fi
 
     if [[ "$FULL" == true ]]; then
         # update lock and hashes  
-        echo "== update tools and locks =="
+        print_header "== update tools and locks =="
+        
         python -m appimage.ctl update-tools
         python -m appimage.ctl enable-reproducible
     fi
     
-    echo "== Check AppImage-Configuration =="
+    print_header "== Check AppImage-Configuration =="
+    
     if [[ "$FULL" == true ]]; then
         "$PYTHON" -m appimage.ctl check
     fi
@@ -45,18 +54,19 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
     
     if [[ "$FULL" == true ]]; then
-        echo "== AppImage full build =="
+        print_header "== AppImage full build =="
         "$PYTHON" -m appimage.ctl build --require-pylock --require-build-pylock
         rm -rf ${ROOT_DIR}/build
     else
-        echo "== AppImage build =="
+       print_header "== AppImage build =="
         "$PYTHON" -m appimage.ctl build --reproducible  
     fi    
     mv ./dev/dist/*.AppImage ./dev/dist/de.maza.traybeat_$VERSION-x86_64.AppImage
     
 
+   
+    print_info "-----------------------------------------------------------"
+    print_info "finish appimage created successfully."
     ls -hal ./dev/dist/*.AppImage
-    echo "-----------------------------------------------------------"
-    echo "finish appimage created successfully."
-    echo "-----------------------------------------------------------"
+    print_info "-----------------------------------------------------------"
 )

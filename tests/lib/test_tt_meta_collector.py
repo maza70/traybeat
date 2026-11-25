@@ -1,12 +1,10 @@
 # pyright: reportPrivateUsage=false
 import shutil
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
-from typing_extensions import override
-
-from traybeat.core.tb_config import TB_EntryType, TB_StationEntry
-from traybeat.core.tb_meta_collector import TB_MetaCollector
+from traybeat.core.tb_meta_collector import TB_MetaCollector, TB_StationType
+from traybeat.lib.tb_i_core import TB_StationEntry
 
 
 class TestableMetaCollector(TB_MetaCollector):
@@ -88,7 +86,7 @@ def test_meta_collect_webradio():
     tempDir.mkdir(parents=True, exist_ok=True)
 
     subject = TestableMetaCollector(on_meta_change=lambda collector: updatemeta(collector), tempDir=tempDir)
-    station = TB_StationEntry(type=TB_EntryType.WEBRADIO, caption="TestRadio", url="http://traybeat")
+    station = TB_StationEntry(type=TB_StationType.WEBRADIO, caption="TestRadio", url="http://traybeat")
     subject.new_song(station)
     subject._on_startup_collect_finish()  # fake time
     # ok we have no tags collected
@@ -133,7 +131,7 @@ def test_meta_collect_playlist():
     tempDir.mkdir(parents=True, exist_ok=True)
 
     subject = TestableMetaCollector(on_meta_change=lambda collector: updatemeta(collector), tempDir=tempDir)
-    station = TB_StationEntry(type=TB_EntryType.PLAYLIST, caption="Test-Playlist", path="/home/traybeat/top100.m3u")
+    station = TB_StationEntry(type=TB_StationType.PLAYLIST, caption="Test-Playlist", path="/home/traybeat/top100.m3u")
     subject.new_song(station)
     tags = FakeTags(
         {

@@ -5,6 +5,7 @@ from traybeat.gui.tb_resource import TB_Resource
 
 
 class TB_IconsName(Enum):
+    UNKNOWN = auto()
     TRAY_PLAY = auto()
     TRAY_STOP = auto()
     TRAY_PAUSE = auto()
@@ -24,6 +25,8 @@ class TB_IconsName(Enum):
     CONFIG = auto()
     INFO = auto()
     MUSIC = auto()
+    UPDATE = auto()
+    UPDATE_OVERLAY = auto()
 
 
 class TB_Icons:
@@ -31,6 +34,8 @@ class TB_Icons:
 
         self._icons: dict[TB_IconsName, Path | str]
         self._icons = {
+            TB_IconsName.UPDATE: TB_Resource.get_path(f"png/{icon_theme}", "update.png"),
+            TB_IconsName.UPDATE_OVERLAY: TB_Resource.get_path("png", "update_overlay.png"),
             TB_IconsName.STOP: TB_Resource.get_path(f"png/{icon_theme}", "stop.png"),
             TB_IconsName.PLAY: TB_Resource.get_path(f"png/{icon_theme}", "play.png"),
             TB_IconsName.QUIT: TB_Resource.get_path(f"png/{icon_theme}", "exit.png"),

@@ -8,7 +8,7 @@
         "**/node_modules"
     ],
     "typeCheckingMode": "strict",
-    "pythonVersion": "3.11",
+    "pythonVersion": "3.13",
     "reportMissingImports": "error",
     "reportMissingTypeStubs": "warning",
     "reportAttributeAccessIssue": "error",

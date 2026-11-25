@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 (
       FULL=false
@@ -25,13 +27,13 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
       SOURCE_DIR="./nfpm/src"
 
-      echo "----===== Build =====----"
-      echo "Version: ${VERSION}"
-      echo "current directory: ${PWD}"
-      echo "project directory: ${ROOT_DIR}"
+      print_header "----===== Build =====----"
+      print_info "Version: ${VERSION}"
+      print_info "current directory: ${PWD}"
+      print_info "project directory: ${ROOT_DIR}"
       
      
-      echo "----===== Clean =====----"
+      print_header "----===== Clean =====----"
       rm -f ./dist/*.rpm
       rm -f ./dist/*.deb
 
@@ -39,7 +41,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
       mkdir -p ./build/usr/local/bin
       cp -v  ./dist/*.AppImage   ./build/usr/local/bin/traybeat
      
-      echo "----===== Build deb package =====----"
+      print_header "----===== Build deb package =====----"
     
       mkdir -p ./build/usr/share/doc/traybeat
       
@@ -54,7 +56,7 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
       mkdir -p ./bin
       if [ ! -f "./bin/nfpm" ]; then
-            echo "----===== Install nfpm =====----"
+            print_header "----===== Install nfpm =====----"
             curl -sfL https://github.com/goreleaser/nfpm/releases/download/v2.48.0/nfpm_2.48.0_Linux_x86_64.tar.gz  | tar -xz -C ./bin nfpm
       fi
       
@@ -63,11 +65,14 @@ ROOT_DIR=$(dirname "$SCRIPT_DIR")
       ./bin/nfpm package --packager rpm --config ./build/nfpm.yaml --target ./dist/
       ./bin/nfpm package --packager deb --config ./build/nfpm.yaml --target ./dist/
 
+      
+      print_info "-----------------------------------------------------------"
+      print_info "Successfully build pakages"
       ls -hal ./dist/*.deb   
       ls -hal ./dist/*.rpm
-     
-       
-      echo "----===== Finish  =====----"
+      print_info "-----------------------------------------------------------"
+
+      
       
 
 )

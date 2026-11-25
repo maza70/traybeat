@@ -2,6 +2,12 @@
 
 In this directory is all to build TrayBeat as AppImage, deb, rpm
 
+## build Dependencies for fedora
+
+* sudo flatpak install flathub org.flatpak.Builder
+* sudo dnf install cairo-devel cairo-gobject-devel gobject-introspection-devel glib2-devel python3-devel pkgconf-pkg-config
+
+
 ## Directories
 
 ### nfpm
@@ -9,6 +15,9 @@ Directory for templates,assets to build deb and rpm packages.
 
 ### appimage
 Directory for assets to build the AppImage.
+
+### flatpak
+Directory for assets to build the flatpak and store the build-output from flatpak-builder.
 
 ## Scripts
 - **clean.sh**
@@ -23,8 +32,9 @@ Directory for assets to build the AppImage.
     - This script create a flatpak from the source.  
     parameters: -sp = skip python pip-generator
     -ir = Install an run flatpak
-
 - **build-sys-package.sh**
     -  Create a deb and rpm package from the previous generated AppImage.    
+- **make-pylock.sh**
+    -  Update the pylock files.
 - **build-release.sh**
-    -  Create a release AppImage, deb and rpm from scratch.
+    -  Create a release AppImage, deb and rpm from scratch. Use --full for a full build  (clean and download, create the dependencies ) 

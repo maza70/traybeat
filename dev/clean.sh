@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-echo "---===== Cleanup projekt  =====---- "
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+print_header "---===== Cleanup projekt  =====---- "
+
 (
     cd ${ROOT_DIR}
     

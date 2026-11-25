@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "traybeat"
-version = "0.1.4"
+version = "0.1.5"
 description = "Webradio and playlist player that runs in the tray"
 requires-python = ">=3.13"
 dependencies = [
@@ -19,10 +19,18 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest","PyGObject-stubs","nfp","build","pyright","ruff","requirements-parser","pytest-asyncio","appimage"]
+
 appimage = [
     "PyGObject>=3.42.0",
     "pycairo>=1.20.0",
 ]
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["network: tests that need real internet access"]
+
 [tool.setuptools]
 py-modules = ["player"]
 
@@ -53,11 +61,12 @@ reproducible = true
 #update this with: python -m appimage.ctl update-tools
 build_pylock = "pylock.build.toml"
 pylock = "pylock.toml"
+
 app = "de.maza.traybeat"
 entry_point = "traybeat"
 python = "3.13"
-python_date = "20261110"
-python_sha256 = "f2d2199eb25880e07863b391cf7124e7ffa1338b0d65600dfcec117c4223a7fb"
+python_date = "20261124"
+python_sha256 = "b56ceb4fc1d8f0c49b7bd4dc91cd176bad7b86a88b9fc509bae6b10b3ee36692"
 appimage_version = "4.1.0"
 appimage_sha256 = "1d4bff605dad7b202bc2607562b663c316f7126f8c7af6098d669a4b9f207d01"
 appimagetool_version = "appimagetool, continuous build (git version 8c8c91f), build 296 built on 2025-12-04 17:55:56 UTC"

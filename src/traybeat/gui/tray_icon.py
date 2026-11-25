@@ -1,6 +1,9 @@
 import logging
 import subprocess
 from copy import deepcopy
+from pathlib import Path
+
+from PIL import Image
 
 from traybeat.core.tb_config import TB_StationEntry, TB_StationsConfig, TB_StationType
 from traybeat.gui.tb_icons import TB_Icons, TB_IconsName
@@ -9,6 +12,7 @@ from traybeat.gui.tb_tray_menu import TB_MenuItem, TB_TrayMenu
 from traybeat.lib.tb_const import APP_ID, APP_NAME
 from traybeat.lib.tb_dispatch import TB_Dispatch
 from traybeat.lib.tb_exception import TB_Exception
+from traybeat.lib.tb_github import TB_Github_UpdateInfo
 from traybeat.lib.tb_i_core import (
     PlayerChangedData,
     TB_CorePlayerInfo,
@@ -33,7 +37,8 @@ class TrayIcon:
 
         self._metaEntry: TB_MenuItem | None = None
         self._playerInfoEntry: TB_MenuItem | None = None
-
+        self._update_available_entry: TB_MenuItem | None = None
+        self._update_info: TB_Github_UpdateInfo | None = None
         self._station_editor_url: str = ""
         self._about_url: str = ""
         self._player_controls_url: str = ""
@@ -93,6 +98,10 @@ class TrayIcon:
     def _on_quit_clicked(self, item: TB_MenuItem):
         self._core.quit()
 
+    def _on_update_click(self, item: TB_MenuItem):
+        if self._update_info is not None and self._update_info.release_url is not None:
+            subprocess.Popen(["xdg-open", self._update_info.release_url])
+
     def _on_volume(self, volume: int):
         self._core.player_set_volume(volume)
 
@@ -147,33 +156,57 @@ class TrayIcon:
         if self._playerInfoEntry is not None:
             self._playerInfoEntry.label = f"Volume: {playerState.volume}% [{playerState.state}]"
 
-    def _icon_update(self, playerState: TB_CorePlayerInfo):
-        match playerState.state:
+    def _merge_overlay(self, base_path: Path | str, overlay_path: Path | str) -> Image.Image:
+        base = Image.open(base_path).convert("RGBA")
+        overlay = Image.open(overlay_path).convert("RGBA")
+        # Overlay size to base
+        if overlay.size != base.size:
+            overlay = overlay.resize(base.size, Image.Resampling.LANCZOS)
+
+        return Image.alpha_composite(base, overlay)
+
+    def _icon_update(self, playerState: TB_CorePlayerInfo | None = None):
+
+        if playerState is None and self._lastPlayerState is None:
+            return
+        if playerState is not None:
+            self._lastPlayerState = playerState
+
+        if self._lastPlayerState is None:
+            return
+        icon = TB_IconsName.UNKNOWN
+        match self._lastPlayerState.state:
             case TB_CorePlayerState.ERROR:
-                self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_ERROR))
+                icon = TB_IconsName.TRAY_ERROR
             case TB_CorePlayerState.PLAYING:
-                self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_PLAY))
+                icon = TB_IconsName.TRAY_PLAY
             case TB_CorePlayerState.STOPPED:
-                self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_STOP))
+                icon = TB_IconsName.TRAY_STOP
             case TB_CorePlayerState.PAUSED:
-                self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_PAUSE))
-            case TB_CorePlayerState.ERROR:  # pyright: ignore[reportUnnecessaryComparison]
-                self._tray_icon.set_icon(self._icons.GetIcon(TB_IconsName.TRAY_ERROR))
+                icon = TB_IconsName.TRAY_PAUSE
             case TB_CorePlayerState.UNKNOWN:
                 pass
             case _:
                 pass
+        if icon == TB_IconsName.UNKNOWN:
+            return
+        if self._update_info is not None:
+            overlay_icon = self._merge_overlay(self._icons.GetIcon(icon), self._icons.GetIcon(TB_IconsName.UPDATE_OVERLAY))
+            self._tray_icon.set_icon(overlay_icon)
+        else:
+            self._tray_icon.set_icon(self._icons.GetIcon(icon))
 
     def _make_menu(self, stations: TB_StationsConfig, menu: TB_TrayMenu):
         menu.clear()
-        if self._metaEntry is None: 
+        if self._metaEntry is None:
             self._metaEntry = TB_MenuItem("- not playing -", enabled=False)
-        
+
         menu.append(self._metaEntry)
         menu.append(TB_MenuItem(separator=True))
-        if self._playerInfoEntry is None: 
+        if self._playerInfoEntry is None:
             self._playerInfoEntry = TB_MenuItem("volume: -- status: --", enabled=False)
         menu.append(self._playerInfoEntry)
+
         menu.append(TB_MenuItem(separator=True))
 
         def traverse(entries: list[TB_StationEntry] | None, parentItem: TB_MenuItem | None) -> None:
@@ -265,6 +298,16 @@ class TrayIcon:
         )
         menu.append(traybeat_menu)
 
+        if self._update_available_entry is None:
+            self._update_available_entry = TB_MenuItem(
+                "-- UPDATE --",
+                enabled=True,
+                visible=False,
+                icon=self._icons.GetIcon(TB_IconsName.UPDATE),
+                callback=lambda menuitem: self._on_update_click(menuitem),
+            )
+        menu.append(self._update_available_entry)
+
         menu.append(TB_MenuItem(label="Quit", icon=self._icons.GetIcon(TB_IconsName.QUIT), callback=lambda item: self._on_quit_clicked(item)))
 
     @property
@@ -293,6 +336,16 @@ class TrayIcon:
     @player_controls_url.setter
     def player_controls_url(self, value: str) -> None:
         self._player_controls_url = value
+
+    def update_available(self, available: TB_Github_UpdateInfo):
+
+        self._update_info = available
+        self._logger.info(f"Update available at {self._update_info.release_url} version: {self._update_info.latest_version}")
+        if self._update_available_entry is not None:
+            self._update_available_entry.label = f"Update V{available.latest_version} is available!"
+            self._update_available_entry.user_data = self._update_info
+            self._update_available_entry.visible = True
+            self._icon_update()
 
     def updateStations(self, stations: TB_StationsConfig):
         self._make_menu(stations, self._tray_icon.menu)

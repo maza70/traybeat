@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -e
-echo "---===== Build Relaese  =====---- "
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
+
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+print_header "---===== Build Relaese  =====---- "
+
 (
     FULL=false #clean all and make a complete rebuild from scratch
     CALL_PARAMS=""

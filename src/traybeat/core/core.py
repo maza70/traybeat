@@ -2,6 +2,8 @@ import asyncio
 
 import gi
 
+from traybeat.lib.tb_github import TB_Github, TB_Github_UpdateInfo
+
 gi.require_version("Gst", "1.0")
 gi.require_version("Gio", "2.0")
 
@@ -133,6 +135,10 @@ class Core(TB_I_Core):
         self._tray_icon.about_url = self._httpServer.about_url
         self._tray_icon.station_editor_url = self._httpServer.station_url
         self._tray_icon.player_controls_url = self._httpServer.player_controls_url
+        # update check
+        self._updateCheck = TB_Github(
+            APP_VERSION, delay=10, retry_delay=30 * 160, max_retries=10, on_update=lambda updateInfo: self._tray_icon.update_available(updateInfo)
+        )
 
     # -------------------------------------------------------------------
     # Methods for control the player
@@ -359,6 +365,9 @@ class Core(TB_I_Core):
     # TrayBeat related methods
     # -------------------------------------------------------------------
     # region TrayBeat methods
+    def _on_update_available(self, updateInfo: TB_Github_UpdateInfo) -> None:
+        self._tray_icon.update_available(updateInfo)
+
     def _system_shutdown(self, reason: str) -> None:
         """callback for the shutdown_watchdog to clean shutdown TrayBeat
 
@@ -452,6 +461,7 @@ class Core(TB_I_Core):
             self._gplayer_play(station=station)
         else:
             self._currentStation = station
+
         return GLib.SOURCE_REMOVE
 
     def _save_state(self) -> None:
@@ -474,7 +484,7 @@ class Core(TB_I_Core):
             await asyncio.sleep(0.01)
 
     async def start(self) -> None:
-        """Start TrayBeat synchron"""
+        """Start TrayBeat"""
         self._logger.info(f"Start {APP_NAME}")
         # self._mainloop = GLib.MainLoop()
 
@@ -484,6 +494,7 @@ class Core(TB_I_Core):
             await self._tray_icon.start(self._config.StationsConfig)
             await self._shutdown_watchdog.start()
             await self._dbusPlayerService.register()
+            self._updateCheck.start()
             #  self._shutdown_watchdog.attach_glib_signals(self._shutdown_event.set)
             GLib.idle_add(self._on_initialized)
 
@@ -493,6 +504,7 @@ class Core(TB_I_Core):
             # Tray stop clean
             self._gplayer.close()
             self._dbusPlayerService.unregister()
+            await self._updateCheck.stop()
             await self._websocket.stop()
             await self._tray_icon.stop()
             await self._mpris.stop()

@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-echo "---===== build Flatpak  =====---- "
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR") 
-
-
 INSTALL_RUN=false
 FULL=false
+
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+print_header "---===== build Flatpak  =====---- "
 
 (
     for ARG in "$@"; do
@@ -15,7 +16,7 @@ FULL=false
 
             -ir) INSTALL_RUN=true ;;
             *)
-                echo "Usage: $0 [--full] [-ir]"
+                print_info "Usage: $0 [--full] [-ir]"
                 exit 1
                 ;;
         esac
@@ -35,39 +36,37 @@ FULL=false
         fi
         rm -rf ./dev/flatpak/.flatpak-builder/build
         rm -rf ./dev/build
-        echo "---===== create python-dependencies.json =====---- "
+        print_header "---===== create python-dependencies.json =====---- "
         python3 ./dev/flatpak/flatpak-pip-generator.py \
             --runtime=org.gnome.Sdk//51 \
             --pyproject-file=pyproject.toml \
             --prefer-wheels=pillow,setproctitle \
             --output=./dev/flatpak/python-dependencies.json
     else
-        echo "---===== skip dependency generation =====----"
+        print_info "---===== skip dependency generation =====----"
     fi
 
 
-    echo "---===== run flatpak-builder  =====---- "
-
-    flatpak-builder \
+    print_header "---===== run flatpak-builder  =====---- "
+    flatpak run org.flatpak.Builder \
         --force-clean \
-        --user \
         --state-dir=./dev/flatpak/.flatpak-builder \
         --install-deps-from=flathub \
         --repo=./dev/build/repo \
         ./dev/build \
         ./dev/flatpak/de.maza.traybeat.yml
-    echo "---===== run build-bundle  =====---- "
+    print_header "---===== run build-bundle  =====---- "
     flatpak build-bundle \
         ./dev/build/repo \
         dev/dist/de.maza.traybeat_$VERSION.flatpak \
         de.maza.traybeat
-    echo "---===== builded flatpak  =====---- "
-    ls -al ./dev/dist/*.flatpak
+    
 
     if [[ "$INSTALL_RUN" == true ]]; then
-        flatpak install --user  --reinstall -y  ./dev/dist/de.maza.traybeat_$VERSION.flatpak && flatpak run de.maza.traybeat -p     
+        flatpak install --reinstall -y  ./dev/dist/de.maza.traybeat_$VERSION.flatpak && flatpak run de.maza.traybeat -p     
     fi    
-    echo "-----------------------------------------------------------"
-    echo "finish flatpak created successfully."
-    echo "-----------------------------------------------------------"
+    print_info "-----------------------------------------------------------"
+    print_info "finish flatpak created successfully."
+    ls -al ./dev/dist/*.flatpak
+    print_info "-----------------------------------------------------------"
 )

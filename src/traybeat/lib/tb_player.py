@@ -178,7 +178,7 @@ class TB_Player:
         self._url: str | None = None
         self._playlist: list[dict[str, str]] = []
         self._index = -1
-        self._previous_index = -1
+
         # Start position (seconds) given to load_playlist(); consumed by the
         # next playlist entry that is started.
         self._resume_position: float | None = None
@@ -466,7 +466,7 @@ class TB_Player:
                 self._index = 0
             else:
                 self._index = startindex
-            self._previous_index = -1
+
             self._mode = "playlist"
             self._url = None
             self._resume_position = float(startposition) if startposition is not None and startposition > 0 else None
@@ -581,7 +581,6 @@ class TB_Player:
         if not self._playlist:
             return
 
-        self._previous_index = self._index
         self._index = (self._index + 1) % len(self._playlist)
         self._play_playlist_index(self._index)
 
@@ -589,13 +588,7 @@ class TB_Player:
         """Play the previous entry, wrapping at the beginning."""
         if not self._playlist:
             return
-
-        if self._previous_index >= 0 and self._previous_index != self._index:
-            target = self._previous_index
-        else:
-            target = (self._index - 1) % len(self._playlist)
-
-        self._previous_index = self._index
+        target = (self._index - 1) % len(self._playlist)
         self._index = target
         self._play_playlist_index(self._index)
 
@@ -612,7 +605,6 @@ class TB_Player:
         if len(candidates) > 1:
             candidates.remove(self._index)
 
-        self._previous_index = self._index
         self._index = _random.choice(candidates)
         self._play_playlist_index(self._index)
 

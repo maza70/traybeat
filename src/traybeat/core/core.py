@@ -180,7 +180,7 @@ class Core(TB_I_Core):
                 self._gplayer_play(self._currentStation)
             else:
                 self._logger.info("Resume playing")
-                self._gplayer.play()
+                self._gplayer_play(self._currentStation)
 
     def _gplayer_play(self, station: TB_StationEntry):
 

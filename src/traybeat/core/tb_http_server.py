@@ -99,15 +99,15 @@ class TB_HttpServer:
 
     @property
     def station_url(self) -> str:
-        return f"{self.address}/stations.html"
+        return f"{self.address}/stations.html?v={APP_VERSION}"
 
     @property
     def about_url(self) -> str:
-        return f"{self.address}/index.html"
+        return f"{self.address}/index.html?v={APP_VERSION}"
 
     @property
     def player_controls_url(self) -> str:
-        return f"{self.address}/player.html"
+        return f"{self.address}/player.html?v={APP_VERSION}"
 
     def _replace_template_vars(self, template: str) -> str:
         # is a variable in the html?

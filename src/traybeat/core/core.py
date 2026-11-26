@@ -131,7 +131,7 @@ class Core(TB_I_Core):
             on_sleep=lambda: self._system_standby(),
             on_wakeup=lambda state, player_state: self._system_resume(state, player_state),
         )
-        self._standby_monitor.start()
+
         self._tray_icon.about_url = self._httpServer.about_url
         self._tray_icon.station_editor_url = self._httpServer.station_url
         self._tray_icon.player_controls_url = self._httpServer.player_controls_url
@@ -494,6 +494,7 @@ class Core(TB_I_Core):
             await self._tray_icon.start(self._config.StationsConfig)
             await self._shutdown_watchdog.start()
             await self._dbusPlayerService.register()
+            self._standby_monitor.start()
             self._updateCheck.start()
             #  self._shutdown_watchdog.attach_glib_signals(self._shutdown_event.set)
             GLib.idle_add(self._on_initialized)
@@ -504,6 +505,8 @@ class Core(TB_I_Core):
             # Tray stop clean
             self._gplayer.close()
             self._dbusPlayerService.unregister()
+            self._standby_monitor.stop()
+            self._shutdown_watchdog.stop()
             await self._updateCheck.stop()
             await self._websocket.stop()
             await self._tray_icon.stop()

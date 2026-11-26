@@ -61,7 +61,8 @@ class TB_HttpServer:
         self._closed = False
         self._logger.info("Start webserver")
         self._httpd = ThreadingHTTPServer((self.host, self.port), self._make_handler())
-        self._httpd.daemon_threads = True
+
+        self._httpd.daemon_threads = False
         self._on_action = on_action
         self._callback_executor = ThreadPoolExecutor(
             max_workers=1,
@@ -338,6 +339,8 @@ class TB_HttpServer:
         if self._thread is not None and self._thread.is_alive():
             self._httpd.shutdown()
             self._thread.join(timeout=5)
+
         self._httpd.server_close()
+        self._callback_executor.shutdown(wait=True, cancel_futures=True)
         self._closed = True
         self._thread = None

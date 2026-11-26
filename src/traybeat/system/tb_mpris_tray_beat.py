@@ -25,6 +25,7 @@ class TB_MprisTrayBeat:
         )
         self._lastMeta = TB_CorePlayerMeta()
         self._lastState = TB_CorePlayerInfo()
+        self._registered_callback = self._on_player_changed
 
     def _update_mipris_meta(self, meta: TB_CorePlayerMeta):
 
@@ -69,9 +70,10 @@ class TB_MprisTrayBeat:
         self._update_mipris_state(self._lastState)
 
     async def start(self):
-        self._core.player_changed_subscribe(lambda data: self._on_player_changed(data))
+
+        self._core.player_changed_subscribe(self._registered_callback)
         await self._mpris.start()
 
     async def stop(self):
-        self._core.player_changed_unsubscribe(lambda data: self._on_player_changed(data))
+        self._core.player_changed_unsubscribe(self._registered_callback)
         await self._mpris.stop()

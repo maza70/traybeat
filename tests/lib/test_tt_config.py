@@ -104,15 +104,15 @@ def test_prevStation():
     prev_station = subject.get_previous_station("1234", TB_StationType.WEBRADIO)
     assert prev_station is None
 
-    prev_station = subject.get_previous_station(stationsConfig.stations[2].uniqueId, TB_EntryType.WEBRADIO)  # type: ignore
+    prev_station = subject.get_previous_station(stationsConfig.stations[2].uniqueId, TB_StationType.WEBRADIO)  # type: ignore
     assert prev_station is not None
     assert prev_station.uniqueId == stationsConfig.stations[0].uniqueId
 
-    prev_station = subject.get_previous_station(stationsConfig.stations[0].uniqueId, TB_EntryType.WEBRADIO)  # type: ignore
+    prev_station = subject.get_previous_station(stationsConfig.stations[0].uniqueId, TB_StationType.WEBRADIO)  # type: ignore
     assert prev_station is not None
     assert prev_station.uniqueId == stationsConfig.stations[2].uniqueId
 
-    prev_station = subject.get_previous_station(stationsConfig.stations[0].uniqueId, TB_EntryType.PLAYLIST)  # type: ignore
+    prev_station = subject.get_previous_station(stationsConfig.stations[0].uniqueId, TB_StationType.PLAYLIST)  # type: ignore
     assert prev_station is not None
     assert prev_station.uniqueId == stationsConfig.stations[3].items[0].uniqueId  # type: ignore
 

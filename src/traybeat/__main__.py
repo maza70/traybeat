@@ -149,9 +149,9 @@ def handle_exception(
 
 
 def main() -> None:
+    sys.excepthook = handle_exception
     asyncio.run(run())
 
 
 if __name__ == "__main__":
-    sys.excepthook = handle_exception
     main()

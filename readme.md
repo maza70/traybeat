@@ -98,10 +98,10 @@ sudo apt install --reinstall ./traybeat_<version>_amd64.deb
 
 ```
 # first install
-sudo dnf install ./traybeat_<version>_amd64.deb
+sudo dnf install ./traybeat_<version>_amd64.rpm
 
 # Update
-sudo dnf reinstall ./traybeat_<version>_amd64.deb
+sudo dnf reinstall ./traybeat_<version>_amd64.rpm
 
 ```
 
